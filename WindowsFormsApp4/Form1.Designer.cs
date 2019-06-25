@@ -30,7 +30,10 @@
         {
             this.components = new System.ComponentModel.Container();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.button3 = new System.Windows.Forms.Button();
+            this.labelInfo = new System.Windows.Forms.Label();
+            this.button9 = new System.Windows.Forms.Button();
+            this.button7 = new System.Windows.Forms.Button();
+            this.textBoxFolderPath = new System.Windows.Forms.TextBox();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
@@ -39,14 +42,13 @@
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
             this.button5 = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
             this.addressBox1 = new Awesomium.Windows.Forms.AddressBox();
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.з0акрытьВклпToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.webSessionProvider1 = new Awesomium.Windows.Forms.WebSessionProvider(this.components);
-            this.button6 = new System.Windows.Forms.Button();
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -65,13 +67,14 @@
             // 
             // splitContainer1.Panel1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.button6);
-            this.splitContainer1.Panel1.Controls.Add(this.button3);
+            this.splitContainer1.Panel1.Controls.Add(this.labelInfo);
+            this.splitContainer1.Panel1.Controls.Add(this.button9);
+            this.splitContainer1.Panel1.Controls.Add(this.button7);
+            this.splitContainer1.Panel1.Controls.Add(this.textBoxFolderPath);
             this.splitContainer1.Panel1.Controls.Add(this.button2);
             this.splitContainer1.Panel1.Controls.Add(this.button1);
             this.splitContainer1.Panel1.Controls.Add(this.panel1);
             this.splitContainer1.Panel1.Controls.Add(this.button5);
-            this.splitContainer1.Panel1.Controls.Add(this.button4);
             this.splitContainer1.Panel1.Controls.Add(this.addressBox1);
             this.splitContainer1.Panel1.Controls.Add(this.splitter1);
             this.splitContainer1.Panel1.Padding = new System.Windows.Forms.Padding(5);
@@ -80,22 +83,48 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.tabControl1);
             this.splitContainer1.Size = new System.Drawing.Size(955, 606);
-            this.splitContainer1.SplitterDistance = 88;
+            this.splitContainer1.SplitterDistance = 174;
             this.splitContainer1.TabIndex = 0;
             // 
-            // button3
+            // labelInfo
             // 
-            this.button3.Location = new System.Drawing.Point(509, 47);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(75, 23);
-            this.button3.TabIndex = 11;
-            this.button3.Text = "test";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click_1);
+            this.labelInfo.AutoSize = true;
+            this.labelInfo.Location = new System.Drawing.Point(130, 111);
+            this.labelInfo.Name = "labelInfo";
+            this.labelInfo.Size = new System.Drawing.Size(31, 17);
+            this.labelInfo.TabIndex = 17;
+            this.labelInfo.Text = "Info";
+            // 
+            // button9
+            // 
+            this.button9.Location = new System.Drawing.Point(830, 144);
+            this.button9.Name = "button9";
+            this.button9.Size = new System.Drawing.Size(113, 23);
+            this.button9.TabIndex = 16;
+            this.button9.Text = "go_test_file";
+            this.button9.UseVisualStyleBackColor = true;
+            this.button9.Click += new System.EventHandler(this.button9_Click);
+            // 
+            // button7
+            // 
+            this.button7.Location = new System.Drawing.Point(749, 146);
+            this.button7.Name = "button7";
+            this.button7.Size = new System.Drawing.Size(75, 23);
+            this.button7.TabIndex = 14;
+            this.button7.Text = "FileConf";
+            this.button7.UseVisualStyleBackColor = true;
+            this.button7.Click += new System.EventHandler(this.button7_Click);
+            // 
+            // textBoxFolderPath
+            // 
+            this.textBoxFolderPath.Location = new System.Drawing.Point(472, 147);
+            this.textBoxFolderPath.Name = "textBoxFolderPath";
+            this.textBoxFolderPath.Size = new System.Drawing.Size(271, 22);
+            this.textBoxFolderPath.TabIndex = 13;
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(427, 48);
+            this.button2.Location = new System.Drawing.Point(211, 45);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 10;
@@ -105,7 +134,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(186, 48);
+            this.button1.Location = new System.Drawing.Point(130, 45);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 9;
@@ -167,22 +196,13 @@
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(794, 49);
+            this.button5.Location = new System.Drawing.Point(794, 45);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(149, 23);
             this.button5.TabIndex = 7;
             this.button5.Text = "ClearMemory";
             this.button5.UseVisualStyleBackColor = true;
             this.button5.Click += new System.EventHandler(this.button5_Click);
-            // 
-            // button4
-            // 
-            this.button4.Location = new System.Drawing.Point(598, 49);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(75, 23);
-            this.button4.TabIndex = 6;
-            this.button4.Text = "button4";
-            this.button4.UseVisualStyleBackColor = true;
             // 
             // addressBox1
             // 
@@ -202,7 +222,7 @@
             // 
             this.splitter1.Location = new System.Drawing.Point(5, 5);
             this.splitter1.Name = "splitter1";
-            this.splitter1.Size = new System.Drawing.Size(119, 78);
+            this.splitter1.Size = new System.Drawing.Size(119, 164);
             this.splitter1.TabIndex = 0;
             this.splitter1.TabStop = false;
             // 
@@ -213,7 +233,7 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(955, 514);
+            this.tabControl1.Size = new System.Drawing.Size(955, 428);
             this.tabControl1.TabIndex = 0;
             this.tabControl1.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.tabControl1_Selecting);
             this.tabControl1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tabControl1_MouseDown);
@@ -237,15 +257,10 @@
             // 
             this.webSessionProvider1.DataPath = "C:\\Users\\User\\Desktop\\session";
             // 
-            // button6
+            // openFileDialog1
             // 
-            this.button6.Location = new System.Drawing.Point(295, 46);
-            this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(75, 23);
-            this.button6.TabIndex = 12;
-            this.button6.Text = "button6";
-            this.button6.UseVisualStyleBackColor = true;
-            this.button6.Click += new System.EventHandler(this.button6_Click);
+            this.openFileDialog1.FileName = "openFileDialog1";
+            this.openFileDialog1.FileOk += new System.ComponentModel.CancelEventHandler(this.openFileDialog1_FileOk);
             // 
             // Form1
             // 
@@ -280,7 +295,6 @@
         private Awesomium.Windows.Forms.AddressBox addressBox1;
         private System.Windows.Forms.Splitter splitter1;
         private System.Windows.Forms.Button button5;
-        private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripButton toolStripButton1;
@@ -288,8 +302,11 @@
         private System.Windows.Forms.ToolStripButton toolStripButton3;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.TextBox textBoxFolderPath;
+        private System.Windows.Forms.OpenFileDialog openFileDialog1;
+        private System.Windows.Forms.Button button7;
+        private System.Windows.Forms.Button button9;
+        private System.Windows.Forms.Label labelInfo;
     }
 }
 

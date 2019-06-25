@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Awesomium.Windows.Forms;
-
+using Microsoft.Win32;
 
 namespace WindowsFormsApp4
 {
@@ -17,7 +18,11 @@ namespace WindowsFormsApp4
     {
         ProgrammMethods pm;
         public bool PageLoad = false;
+        private string registrPath = @"Software\MyProgrammDeff83";
 
+        public RegistryKey currentUser { get; private set; }
+        public RegistryKey myProgramm { get; private set; }
+       
         public Form1()
         {
             InitializeComponent();
@@ -28,17 +33,68 @@ namespace WindowsFormsApp4
             pm = new ProgrammMethods(tabControl1, webSessionProvider1, this);
             pm.AddPages(tabControl1);
             splitContainer1.IsSplitterFixed = true;
+            initial();
             //for TEST deleted
-            this.Visible = false;
-            this.ShowInTaskbar = false;
-            autostart();
+            // this.Visible = false;
+            //  this.ShowInTaskbar = false;
+            // autostart();
 
         }
 
+        private void initial()
+        {
+            //инициализация программы
+            currentUser = Registry.CurrentUser;
+            string path;
+            using (myProgramm = currentUser.CreateSubKey(registrPath))
+            {
+                path = (string)myProgramm.GetValue("pathConfig");
+            };
+            if (path != null)
+            {
+                textBoxFolderPath.Text = path;
+
+                using (StreamReader filereaderStream = new StreamReader(textBoxFolderPath.Text))
+                {
+                    string lineCmd = filereaderStream.ReadLine();
+                    if (lineCmd != null)
+                    {
+                        switch (lineCmd)
+                        {
+                            case "[AUTORUNHIDE]":
+                                {
+                                    /// автозапуск с скрытием окна
+                                    this.Visible = false;
+                                    this.ShowInTaskbar = false;
+                                    autostart();
+                                }
+                                break;
+                            case "[AUTORUN]":
+                                {
+                                    /// автозапуск
+                                    autostart();
+                                }
+                                break;
+                            case "[DEBUGAUTORUN]":
+                                {
+                                    /// автозапуск
+                                    pm.isDebug = true;
+                                    autostart();
+                                }
+                                break;
+
+                        }
+
+                    }
+                };
+            }
+        }
+
+
         private void autostart()
         {
-            
-            goautorized();
+            ///здесь действия для авто запуска
+            goautofiled();
         }
 
         private void button1_Click(object sender, EventArgs e) // Назад
@@ -99,22 +155,45 @@ namespace WindowsFormsApp4
             form_xml.Show();
         }
 
-        private void button3_Click_1(object sender, EventArgs e)
-        {
-            goautorized();
-        }
-
         private void button6_Click(object sender, EventArgs e)
         {
             new FormCaptchaImg("<center><img src='https://adbtc.top/1captcha/1561383462.5671.jpg' style='width: 150; height: 87; border: 0;' alt=' '></center> ", pm).Show();
         }
-        private async void goautorized()
+        private async void goautofiled()
         {
             await Task.Run(() =>
             {
-                //авторизация на adb.top
-                pm.authorizationSign(webControl());
+                pm.bot_writer_fileConfig(textBoxFolderPath.Text, webControl(), labelInfo);
+                MessageBox.Show("bot завершил работу","Deff83-botADB", MessageBoxButtons.OK,MessageBoxIcon.Warning);
             });
+        }
+
+        private void folderBrowserDialog1_HelpRequest(object sender, EventArgs e)
+        {
+
+        }
+
+        private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
+        {
+            textBoxFolderPath.Text = ((OpenFileDialog)sender).FileName;
+            using (myProgramm = currentUser.OpenSubKey(registrPath, true))
+                myProgramm.SetValue("pathConfig", textBoxFolderPath.Text);
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            openFileDialog1.ShowDialog();
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            //save for autorun
+            
+        }
+
+        private void button9_Click(object sender, EventArgs e)
+        {
+            goautofiled();
         }
     }
 }

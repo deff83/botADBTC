@@ -68,16 +68,49 @@ namespace WindowsFormsApp4
         /// <param name="webControl">webControl на котором будет выполнять метод</param>
         /// <param name="getElementBy">Атрибут поиска в теге</param>
         /// <param name="ElementValue">Значение атрибута, по которому будет происходить поиск</param>
-        public void PressButton(WebControl webControl, GetElementBy getElementBy, string ElementValue, string type)
+        public void PressButton(WebControl webControl, GetElementBy getElementBy, string ElementValue, int count, string type)
         {
-            if (getElementBy == GetElementBy.Id) {
+            if (getElementBy == GetElementBy.Id)
+            {
                 webControl.ExecuteJavascript("document." + Elements[getElementBy] + "('" + ElementValue + "')." + type + "()");
             }
             else
             {
-                webControl.ExecuteJavascript("document." + Elements[getElementBy] + "('" + ElementValue + "')[0]." + type + "()");
+                webControl.ExecuteJavascript("document." + Elements[getElementBy] + "('" + ElementValue + "')[" + count + "]." + type + "()");
             }
-            
+
+        }
+        /// <summary>
+        /// Нажимает кнопку на сайте в элементе
+        /// </summary>
+        /// <param name="webControl">webControl на котором будет выполнять метод</param>
+        /// <param name="getElementBy">Атрибут поиска в теге</param>
+        /// <param name="ElementValue">Значение атрибута, по которому будет происходить поиск</param>
+        public void PressButtonInDIV(WebControl webControl, GetElementBy getElementBy, string ElementValue, int count, GetElementBy getElementBy2, string ElementValue2, int count2, string type)
+        {
+            if (getElementBy == GetElementBy.Id)
+            {
+                if (getElementBy2 == GetElementBy.Id)
+                {
+                    webControl.ExecuteJavascript("document." + Elements[getElementBy] + "('" + ElementValue + "')." + Elements[getElementBy2] + "('" + ElementValue2 + "')." + type + "()");
+                }
+                else
+                {
+                    webControl.ExecuteJavascript("document." + Elements[getElementBy] + "('" + ElementValue + "')." + Elements[getElementBy2] + "('" + ElementValue2 + "')[" + count2 + "]." + type + "()");
+                }
+            }
+            else
+            {
+                if (getElementBy2 == GetElementBy.Id)
+                {
+                    webControl.ExecuteJavascript("document." + Elements[getElementBy] + "('" + ElementValue + "')[" + count + "]." + Elements[getElementBy2] + "('" + ElementValue2 + "')." + type + "()");
+                }
+                else
+                {
+                    webControl.ExecuteJavascript("document." + Elements[getElementBy] + "('" + ElementValue + "')[" + count + "]." + Elements[getElementBy2] + "('" + ElementValue2 + "')[" + count2 + "]." + type + "()");
+                }
+            }
+
         }
 
         /// <summary>
@@ -129,12 +162,41 @@ namespace WindowsFormsApp4
         /// <param name="value">Значение, которое запишет в поле на сайте</param>
         public void WriteInField(WebControl webControl, GetElementBy getElementBy, string AttributeValue, string value)
         {
-            webControl.ExecuteJavascript("document." + Elements[getElementBy] + "('" + AttributeValue + "')[0].value = " + "'" + value + "'");
+            if (getElementBy == GetElementBy.Id)
+            {
+                webControl.ExecuteJavascript("document." + Elements[getElementBy] + "('" + AttributeValue + "').value = " + "'" + value + "'");
+            }
+            else
+            {
+                webControl.ExecuteJavascript("document." + Elements[getElementBy] + "('" + AttributeValue + "')[0].value = " + "'" + value + "'");
+            }
         }
 
         public string GetAtribInDivInDiv(WebControl webControl, GetElementBy getElementBy, string Atrribute, int count, GetElementBy getElementBy2, string Atrribute2, int count2,string Atrrib)
         {
-            string js_code = "document."+ Elements[getElementBy] + "('"+Atrribute+ "')[" + count + "]." + Elements[getElementBy2] + "('" + Atrribute2 + "')["+ count2 + "]."+ Atrrib;
+            string js_code;
+            if (getElementBy == GetElementBy.Id)
+            {
+                if (getElementBy2 == GetElementBy.Id)
+                {
+                    js_code = "document." + Elements[getElementBy] + "('" + Atrribute + "')." + Elements[getElementBy2] + "('" + Atrribute2 + "')." + Atrrib;
+                }
+                else
+                {
+                    js_code = "document." + Elements[getElementBy] + "('" + Atrribute + "')." + Elements[getElementBy2] + "('" + Atrribute2 + "')[" + count2 + "]." + Atrrib;
+                }
+            }
+            else
+            {
+                if (getElementBy2 == GetElementBy.Id)
+                {
+                    js_code = "document." + Elements[getElementBy] + "('" + Atrribute + "')[" + count + "]." + Elements[getElementBy2] + "('" + Atrribute2 + "')." + Atrrib;
+                }
+                else
+                {
+                    js_code = "document." + Elements[getElementBy] + "('" + Atrribute + "')[" + count + "]." + Elements[getElementBy2] + "('" + Atrribute2 + "')[" + count2 + "]." + Atrrib;
+                }
+            }
             return webControl.ExecuteJavascriptWithResult(js_code);
            // return js_code;
         }

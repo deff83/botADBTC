@@ -2,6 +2,7 @@
 using Awesomium.Windows.Forms;
 using System;
 using System.Drawing;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace WindowsFormsApp4
@@ -137,8 +138,9 @@ namespace WindowsFormsApp4
         /// </summary>
         private void webControl_DocumentReady(object sender, DocumentReadyEventArgs e)
         {
-            ((WebControl)sender).Parent.Text = ((WebControl)sender).Title;
-            if (e.ReadyState == DocumentReadyState.Loaded) {  pm.PageLoad = true; /*флаг загруженной страници*/ };
+            string url = ((WebControl)sender).Title;
+            ((WebControl)sender).Parent.Text = url;
+            if (e.ReadyState == DocumentReadyState.Loaded) {  pm.PageLoad = true; messagInfo("страница "+ url + " загрузилась"); /*флаг загруженной страници*/ };
         }
 
         /// <summary>
@@ -169,7 +171,15 @@ namespace WindowsFormsApp4
 
             tabControl.TabPages[tabControl.SelectedIndex].Controls.Add(webControl);
         }
+        //асинхронный вывод сообщения
+        private async void messagInfo(string message)
+        {
+            await Task.Run(() =>
+            {
+                if (pm.isDebug) MessageBox.Show(message);
+            });
 
+        }
     }
 }
 
