@@ -19,7 +19,7 @@ namespace WindowsFormsApp4
         ProgrammMethods pm;
         public bool PageLoad = false;
         private string registrPath = @"Software\MyProgrammDeff83";
-
+        
         public RegistryKey currentUser { get; private set; }
         public RegistryKey myProgramm { get; private set; }
        
@@ -30,15 +30,40 @@ namespace WindowsFormsApp4
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            pm = new ProgrammMethods(tabControl1, webSessionProvider1, this);
+            pm = new ProgrammMethods(tabControl1, webSessionProvider1, this, notifyIcon1);
             pm.AddPages(tabControl1);
             splitContainer1.IsSplitterFixed = true;
+
+            //меню контекстное значка в трее
+            настройкиToolStripMenuItem.Click += НастройкиToolStripMenuItem_Click;
+            выходToolStripMenuItem.Click += ВыходToolStripMenuItem_Click;
+            this.Resize += Form1_Resize;
             initial();
             //for TEST deleted
             // this.Visible = false;
             //  this.ShowInTaskbar = false;
             // autostart();
 
+        }
+
+        private void Form1_Resize(object sender, EventArgs e)
+        {
+            if (WindowState == FormWindowState.Minimized)
+            {
+                this.Visible = false;
+                this.ShowInTaskbar = false;
+            }
+        }
+
+        private void ВыходToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //выход из программы
+            Close();
+        }
+
+        private void НастройкиToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //new FormShowWeb(webControl()).Show();
         }
 
         private void initial()
@@ -79,6 +104,10 @@ namespace WindowsFormsApp4
                                 {
                                     /// автозапуск
                                     pm.isDebug = true;
+                                    FormLogs formlogs = new FormLogs();
+                                    pm.formlog = formlogs;
+                                    formlogs.Show();
+                                    formlogs.DownLog(pm.logystring);
                                     autostart();
                                 }
                                 break;
@@ -88,6 +117,8 @@ namespace WindowsFormsApp4
                     }
                 };
             }
+            notifyIcon1.ContextMenuStrip = contextMenuStrip2;
+            notifyIcon1.Visible = true;
         }
 
 
@@ -164,7 +195,7 @@ namespace WindowsFormsApp4
             await Task.Run(() =>
             {
                 pm.bot_writer_fileConfig(textBoxFolderPath.Text, webControl(), labelInfo);
-                MessageBox.Show("bot завершил работу","Deff83-botADB", MessageBoxButtons.OK,MessageBoxIcon.Warning);
+                pm.showNotify("Deff83-botADB", "bot завершил работу", ToolTipIcon.Warning);
             });
         }
 
@@ -194,6 +225,14 @@ namespace WindowsFormsApp4
         private void button9_Click(object sender, EventArgs e)
         {
             goautofiled();
+        }
+
+        private void logsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FormLogs formlogs = new FormLogs();
+            pm.formlog = formlogs;
+            formlogs.Show();
+            formlogs.DownLog(pm.logystring);
         }
     }
 }

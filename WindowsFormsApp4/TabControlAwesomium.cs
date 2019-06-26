@@ -140,7 +140,9 @@ namespace WindowsFormsApp4
         {
             string url = ((WebControl)sender).Title;
             ((WebControl)sender).Parent.Text = url;
-            if (e.ReadyState == DocumentReadyState.Loaded) {  pm.PageLoad = true; messagInfo("страница "+ url + " загрузилась"); /*флаг загруженной страници*/ };
+            if (e.ReadyState == DocumentReadyState.Loaded) {  pm.PageLoad = true;
+                pm.setLog("info", "страница " + url + " загрузилась");
+                /*флаг загруженной страници*/ };
         }
 
         /// <summary>

@@ -125,6 +125,18 @@
     <Compile Include="FormCaptchaImg.Designer.cs">
       <DependentUpon>FormCaptchaImg.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormLogs.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormLogs.Designer.cs">
+      <DependentUpon>FormLogs.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormShowWeb.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormShowWeb.Designer.cs">
+      <DependentUpon>FormShowWeb.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormXMLView.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -141,6 +153,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormCaptchaImg.resx">
       <DependentUpon>FormCaptchaImg.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormLogs.resx">
+      <DependentUpon>FormLogs.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormShowWeb.resx">
+      <DependentUpon>FormShowWeb.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormXMLView.resx">
       <DependentUpon>FormXMLView.cs</DependentUpon>
@@ -196,6 +214,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\11444.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Deff83.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,27 +13,36 @@ namespace WindowsFormsApp4
         NavigationOnWebControl NOW;
         public TabControlAwesomium TCA;
         private Form formGUI;
+        private NotifyIcon notifyIcon1;
+        private TabControl tabControl;
         /// поле если дебаг режим то выводить информацию о работе бота
         public bool isDebug = false;
         /// <summary>
         /// PageLoad - страница загрузилась с событием Loaded
         /// UserAnswer - ответ от User получен
         /// </summary>
+        public string logystring { get;  set; }
+        public FormLogs formlog { get; set; }
         public bool PageLoad = false;
         public bool UserAnswer = false;
         public int startPosition = 0;
         public int nextPosition = 0;
         ///     {atribstring} - аттрибут каконебуть элемента
         ///     {userword} - возвращенное значение от user
+        ///     {saved} - возвращенное значение от user
         public string userword;
         private string atribstring;
+        private string saved;
         private int countProgramm;
+        private Dictionary<string,string> saveString = new Dictionary<string, string>();
 
-        public ProgrammMethods(TabControl tabControl, WebSessionProvider webSessionProvider, Form1 form1)
+        public ProgrammMethods(TabControl tabControl, WebSessionProvider webSessionProvider, Form1 form1, NotifyIcon notifyIcon1)
         {
             NOW = new NavigationOnWebControl();
             TCA = new TabControlAwesomium(tabControl, webSessionProvider, this);
             this.formGUI = form1;
+            this.notifyIcon1 = notifyIcon1;
+            this.tabControl = tabControl;
         }
 
         public void AddPages(TabControl tabControl) // При загрузки формы добавляет 2 вкладки на TabControl
@@ -97,6 +107,7 @@ namespace WindowsFormsApp4
                     
                     formGUI.BeginInvoke((Action)(()=> {
                         labelinfor.Text = "line " + countProgramm + ": " + lineCmd;
+                        setLog("line", countProgramm + ": " + lineCmd);
                     }));
                     //Thread.Sleep(2000);
                     switch (command)
@@ -125,7 +136,22 @@ namespace WindowsFormsApp4
                                     /// commandsSplit[1] - по какому типу поиск поля
                                     /// commandsSplit[2] - имя типа для поиска
                                     /// commandsSplit[3] - что вставит в найденное поле
-                                    NOW.WriteInField(webControl, getNavigOnWebControl(commandsSplit[1]), commandsSplit[2], DeformateStringForWords(commandsSplit[3])); 
+                                    NOW.WriteInField(webControl, getNavigOnWebControl(commandsSplit[1]), commandsSplit[2], DeformateStringForWords(commandsSplit[3]));
+                                }));
+                            }
+                            break;
+                        case "WriteInFieldInDiv":
+                            {
+                                formGUI.Invoke((Action)(() => {
+                                    /// ищется поле по поиску и заполняется из элемента
+                                    /// commandsSplit[1] - по какому типу поиск элемента
+                                    /// commandsSplit[2] - имя типа для поиска
+                                    /// commandsSplit[3] - индекс найденного элемента
+                                    /// commandsSplit[4] - по какому типу поиск поля
+                                    /// commandsSplit[5] - имя типа для поиска
+                                    /// commandsSplit[6] - индекс поля
+                                    /// commandsSplit[7] - что вставить в найденное поле
+                                    NOW.WriteInFieldInDiv(webControl, getNavigOnWebControl(commandsSplit[1]), commandsSplit[2], Int32.Parse(commandsSplit[3]), getNavigOnWebControl(commandsSplit[4]), commandsSplit[5], Int32.Parse(commandsSplit[6]), DeformateStringForWords(commandsSplit[7]));
                                 }));
                             }
                             break;
@@ -141,6 +167,20 @@ namespace WindowsFormsApp4
                                     /// commandsSplit[6] - какой из найденный элемент из списка использовать
                                     /// commandsSplit[7] - какой атрибут нужен
                                     atribstring = NOW.GetAtribInDivInDiv(webControl, getNavigOnWebControl(commandsSplit[1]), commandsSplit[2], Int32.Parse(commandsSplit[3]), getNavigOnWebControl(commandsSplit[4]), commandsSplit[5], Int32.Parse(commandsSplit[6]), commandsSplit[7]);
+                                    setLog("Warning", "{atribstring} = " + atribstring);
+                                }));
+                            }
+                            break;
+                        case "GetAtribInDiv":
+                            {
+                                formGUI.Invoke((Action)(() => {
+                                    /// ищется атрибут у элемента в элементе - найденное записывается в переменную atribstring
+                                    /// commandsSplit[1] - по какому типу поиск поля первого элемента
+                                    /// commandsSplit[2] - имя типа для поиска первого элемента
+                                    /// commandsSplit[3] - какой из найденный элемент из списка использовать
+                                    /// commandsSplit[4] - какой атрибут нужен
+                                    atribstring = NOW.GetAtribInDiv(webControl, getNavigOnWebControl(commandsSplit[1]), commandsSplit[2], Int32.Parse(commandsSplit[3]),  commandsSplit[4]);
+                                    setLog("Warning", "{atribstring} = " + atribstring);
                                 }));
                             }
                             break;
@@ -198,16 +238,52 @@ namespace WindowsFormsApp4
                                 ///commandsSplit[3] - переход на стр если true
                                 ///commandsSplit[4] - переход если false
                                 if (DeformateStringForWords(commandsSplit[1]) == DeformateStringForWords(commandsSplit[2]))
-                                    gotoline(Int32.Parse(commandsSplit[3]), filereaderStream); 
+                                    gotoline(Int32.Parse(commandsSplit[3]), filereaderStream);
                                 else
                                     gotoline(Int32.Parse(commandsSplit[4]), filereaderStream); ;
 
                             }
                             break;
+                        case "[SAVE]":
+                            {
+                                ///сохранение в словарь saveString
+                                ///commandsSplit[1] - ключ
+                                ///commandsSplit[2] - значение
+                                if (saveString.ContainsKey(commandsSplit[1]))
+                                    saveString[commandsSplit[1]] = DeformateStringForWords(commandsSplit[2]);
+                                else
+                                    saveString.Add(commandsSplit[1], DeformateStringForWords(commandsSplit[2]));
+                            }
+                            break;
+                        case "[CLOSE_TAB]":
+                            {
+                                ///закрытие активной вкладки
+                                formGUI.Invoke((Action)(() =>
+                                {
+                                    tabControl.TabPages[tabControl.SelectedIndex].Dispose();
+                                    setLog("Warning", "CLOSE_TAB");
+                                }));
+                                
+                            }
+                            break;
+                        case "[READ_SAVED]":
+                            {
+                                ///чтение записи из словаря saveString в {saved}
+                                ///commandsSplit[1] - ключ
+                                saved = saveString[commandsSplit[1]];
+                            }
+                            break;
+                        case "[LOG]":
+                            {
+                                ///запись лога в событие
+                                ///commandsSplit[1] - текст лога
+                                setLog("PROGRAMMS", DeformateStringForWords(commandsSplit[1]));
+                            }
+                            break;
                         case "[GOTO_SUB_PROGRAMM]":
                             {
                                 ///меткак куда перейти
-                                nextPosition = countProgramm;
+                                //nextPosition = countProgramm;
                                 filereaderStream.DiscardBufferedData();
                                 filereaderStream.BaseStream.Seek(0, SeekOrigin.Begin);
                                 countProgramm = startPosition;
@@ -258,8 +334,24 @@ namespace WindowsFormsApp4
         {
             return instring
                 .Replace("{userword}", userword)
-                .Replace("{atribstring}", atribstring);
+                .Replace("{atribstring}", atribstring)
+                .Replace("{saved}", saved);
         }
-        
+        public void showNotify(string title, string text, ToolTipIcon tooltip)
+        {
+            formGUI.Invoke((Action)(() =>
+            {
+                notifyIcon1.BalloonTipIcon = tooltip;
+                notifyIcon1.BalloonTipText = text;
+                notifyIcon1.BalloonTipTitle = title;
+                notifyIcon1.ShowBalloonTip(10);
+            }));
+        }
+        public void setLog(string type, string text)
+        {
+            string newlogs = Environment.NewLine + DateTime.Now + " [" + type + "]: " + text;
+            logystring += newlogs;
+            formlog.RefreshLog(newlogs);
+        }
     }
 }

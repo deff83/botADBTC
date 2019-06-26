@@ -89,5 +89,15 @@ namespace WindowsFormsApp4.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Icon, аналогичного (Значок).
+        /// </summary>
+        internal static System.Drawing.Icon Deff83 {
+            get {
+                object obj = ResourceManager.GetObject("Deff83", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
     }
 }

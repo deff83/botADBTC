@@ -171,8 +171,35 @@ namespace WindowsFormsApp4
                 webControl.ExecuteJavascript("document." + Elements[getElementBy] + "('" + AttributeValue + "')[0].value = " + "'" + value + "'");
             }
         }
+        public void WriteInFieldInDiv(WebControl webControl, GetElementBy getElementBy, string AttributeValue, int count, GetElementBy getElementBy2, string AttributeValue2, int count2, string value)
+        {
+            string js_code;
+            if (getElementBy == GetElementBy.Id)
+            {
+                if (getElementBy2 == GetElementBy.Id)
+                {
+                    js_code = "document." + Elements[getElementBy] + "('" + AttributeValue + "')." + Elements[getElementBy2] + "('" + AttributeValue2 + "').value = " + "'" + value + "'";
+                }
+                else
+                {
+                    js_code = "document." + Elements[getElementBy] + "('" + AttributeValue + "')." + Elements[getElementBy2] + "('" + AttributeValue2 + "')[" + count2 + "].value = " + "'" + value + "'";
+                }
+            }
+            else
+            {
+                if (getElementBy2 == GetElementBy.Id)
+                {
+                    js_code = "document." + Elements[getElementBy] + "('" + AttributeValue + "')[" + count + "]." + Elements[getElementBy2] + "('" + AttributeValue2 + "').value = " + "'" + value + "'";
+                }
+                else
+                {
+                    js_code = "document." + Elements[getElementBy] + "('" + AttributeValue + "')[" + count + "]." + Elements[getElementBy2] + "('" + AttributeValue2 + "')[" + count2 + "].value = " + "'" + value + "'";
+                }
+            }
+            webControl.ExecuteJavascript(js_code);
+        }
 
-        public string GetAtribInDivInDiv(WebControl webControl, GetElementBy getElementBy, string Atrribute, int count, GetElementBy getElementBy2, string Atrribute2, int count2,string Atrrib)
+        public string GetAtribInDivInDiv(WebControl webControl, GetElementBy getElementBy, string Atrribute, int count, GetElementBy getElementBy2, string Atrribute2, int count2, string Atrrib)
         {
             string js_code;
             if (getElementBy == GetElementBy.Id)
@@ -198,7 +225,21 @@ namespace WindowsFormsApp4
                 }
             }
             return webControl.ExecuteJavascriptWithResult(js_code);
-           // return js_code;
+            // return js_code;
+        }
+        public string GetAtribInDiv(WebControl webControl, GetElementBy getElementBy, string Atrribute, int count,  string Atrrib)
+        {
+            string js_code;
+            if (getElementBy == GetElementBy.Id)
+            {
+                js_code = "document." + Elements[getElementBy] + "('" + Atrribute + "')." +  Atrrib;
+            }
+            else
+            {
+                js_code = "document." + Elements[getElementBy] + "('" + Atrribute + "')[" + count + "]." +  Atrrib;
+            }
+            return webControl.ExecuteJavascriptWithResult(js_code);
+            // return js_code;
         }
     }
 }
