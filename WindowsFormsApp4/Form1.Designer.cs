@@ -52,9 +52,11 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
             this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.показатьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.стопToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.logsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.настройкиToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.выходToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.logsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -278,30 +280,46 @@
             // 
             this.contextMenuStrip2.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.contextMenuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.показатьToolStripMenuItem,
+            this.стопToolStripMenuItem,
             this.logsToolStripMenuItem,
             this.настройкиToolStripMenuItem,
             this.выходToolStripMenuItem});
             this.contextMenuStrip2.Name = "contextMenuStrip2";
-            this.contextMenuStrip2.Size = new System.Drawing.Size(211, 104);
+            this.contextMenuStrip2.Size = new System.Drawing.Size(152, 124);
+            // 
+            // показатьToolStripMenuItem
+            // 
+            this.показатьToolStripMenuItem.Name = "показатьToolStripMenuItem";
+            this.показатьToolStripMenuItem.Size = new System.Drawing.Size(151, 24);
+            this.показатьToolStripMenuItem.Text = "показать";
+            this.показатьToolStripMenuItem.Click += new System.EventHandler(this.показатьToolStripMenuItem_Click);
+            // 
+            // стопToolStripMenuItem
+            // 
+            this.стопToolStripMenuItem.Name = "стопToolStripMenuItem";
+            this.стопToolStripMenuItem.Size = new System.Drawing.Size(151, 24);
+            this.стопToolStripMenuItem.Text = "стоп";
+            this.стопToolStripMenuItem.Click += new System.EventHandler(this.стопToolStripMenuItem_Click);
+            // 
+            // logsToolStripMenuItem
+            // 
+            this.logsToolStripMenuItem.Name = "logsToolStripMenuItem";
+            this.logsToolStripMenuItem.Size = new System.Drawing.Size(151, 24);
+            this.logsToolStripMenuItem.Text = "Logs";
+            this.logsToolStripMenuItem.Click += new System.EventHandler(this.logsToolStripMenuItem_Click);
             // 
             // настройкиToolStripMenuItem
             // 
             this.настройкиToolStripMenuItem.Name = "настройкиToolStripMenuItem";
-            this.настройкиToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
+            this.настройкиToolStripMenuItem.Size = new System.Drawing.Size(151, 24);
             this.настройкиToolStripMenuItem.Text = "настройки";
             // 
             // выходToolStripMenuItem
             // 
             this.выходToolStripMenuItem.Name = "выходToolStripMenuItem";
-            this.выходToolStripMenuItem.Size = new System.Drawing.Size(140, 24);
+            this.выходToolStripMenuItem.Size = new System.Drawing.Size(151, 24);
             this.выходToolStripMenuItem.Text = "выход";
-            // 
-            // logsToolStripMenuItem
-            // 
-            this.logsToolStripMenuItem.Name = "logsToolStripMenuItem";
-            this.logsToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
-            this.logsToolStripMenuItem.Text = "Logs";
-            this.logsToolStripMenuItem.Click += new System.EventHandler(this.logsToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -354,6 +372,8 @@
         private System.Windows.Forms.ToolStripMenuItem настройкиToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem выходToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem logsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem показатьToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem стопToolStripMenuItem;
     }
 }
 

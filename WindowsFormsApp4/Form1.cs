@@ -19,6 +19,7 @@ namespace WindowsFormsApp4
         ProgrammMethods pm;
         public bool PageLoad = false;
         private string registrPath = @"Software\MyProgrammDeff83";
+        private bool Hide = false;
         
         public RegistryKey currentUser { get; private set; }
         public RegistryKey myProgramm { get; private set; }
@@ -50,8 +51,7 @@ namespace WindowsFormsApp4
         {
             if (WindowState == FormWindowState.Minimized)
             {
-                this.Visible = false;
-                this.ShowInTaskbar = false;
+                Hide();
             }
         }
 
@@ -89,8 +89,7 @@ namespace WindowsFormsApp4
                             case "[AUTORUNHIDE]":
                                 {
                                     /// автозапуск с скрытием окна
-                                    this.Visible = false;
-                                    this.ShowInTaskbar = false;
+                                    Hide = true;
                                     autostart();
                                 }
                                 break;
@@ -194,14 +193,12 @@ namespace WindowsFormsApp4
         {
             await Task.Run(() =>
             {
+                Invoke((Action)(() => { if(Hide) Hide(); }));
+                pm.isworking = true;
                 pm.bot_writer_fileConfig(textBoxFolderPath.Text, webControl(), labelInfo);
                 pm.showNotify("Deff83-botADB", "bot завершил работу", ToolTipIcon.Warning);
+                pm.isworking = false;
             });
-        }
-
-        private void folderBrowserDialog1_HelpRequest(object sender, EventArgs e)
-        {
-
         }
 
         private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
@@ -216,12 +213,7 @@ namespace WindowsFormsApp4
             openFileDialog1.ShowDialog();
         }
 
-        private void button8_Click(object sender, EventArgs e)
-        {
-            //save for autorun
-            
-        }
-
+        
         private void button9_Click(object sender, EventArgs e)
         {
             goautofiled();
@@ -233,6 +225,16 @@ namespace WindowsFormsApp4
             pm.formlog = formlogs;
             formlogs.Show();
             formlogs.DownLog(pm.logystring);
+        }
+
+        private void показатьToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Show();
+        }
+
+        private void стопToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            pm.isworking = false;
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -15,8 +17,13 @@ namespace WindowsFormsApp4
         private Form formGUI;
         private NotifyIcon notifyIcon1;
         private TabControl tabControl;
+        private WebSessionProvider webSessionProvider;
+        ///webControl для удаления
+        private WebControl webControlDel;
         /// поле если дебаг режим то выводить информацию о работе бота
+        /// isworking - работать ли
         public bool isDebug = false;
+        public bool isworking = false;
         /// <summary>
         /// PageLoad - страница загрузилась с событием Loaded
         /// UserAnswer - ответ от User получен
@@ -25,6 +32,8 @@ namespace WindowsFormsApp4
         public FormLogs formlog { get; set; }
         public bool PageLoad = false;
         public bool UserAnswer = false;
+        private bool TimerLoad = false;
+
         public int startPosition = 0;
         public int nextPosition = 0;
         ///     {atribstring} - аттрибут каконебуть элемента
@@ -35,7 +44,7 @@ namespace WindowsFormsApp4
         private string saved;
         private int countProgramm;
         private Dictionary<string,string> saveString = new Dictionary<string, string>();
-
+        
         public ProgrammMethods(TabControl tabControl, WebSessionProvider webSessionProvider, Form1 form1, NotifyIcon notifyIcon1)
         {
             NOW = new NavigationOnWebControl();
@@ -43,6 +52,7 @@ namespace WindowsFormsApp4
             this.formGUI = form1;
             this.notifyIcon1 = notifyIcon1;
             this.tabControl = tabControl;
+            this.webSessionProvider = webSessionProvider;
         }
 
         public void AddPages(TabControl tabControl) // При загрузки формы добавляет 2 вкладки на TabControl
@@ -55,12 +65,28 @@ namespace WindowsFormsApp4
         {
             PageLoad = false;
             int secstart = sec;
-            while (!PageLoad&& secstart>1)
+            bool exit = true;
+            while (exit)
             {
+                if (PageLoad) exit = false;
+                if (secstart<0) exit = false;
                 secstart--;
                 Thread.Sleep(1000);
             }
 
+        }
+        private void waitTimer(int sec)
+        {
+            TimerLoad = false;
+            int secstart = (int) (sec / 5);
+            bool exit = true;
+            while (exit)
+            {
+                if (TimerLoad) exit = false;
+                if (secstart < 0) exit = false;
+                secstart--;
+                Thread.Sleep(5000);
+            }
         }
         private void waitUser()
         {
@@ -98,7 +124,7 @@ namespace WindowsFormsApp4
                 lineCmd = filereaderStream.ReadLine();
                 countProgramm = 1;
 
-                while ((lineCmd = filereaderStream.ReadLine()) != null)
+                while ((lineCmd = filereaderStream.ReadLine()) != null && isworking)
                 {
                     countProgramm++;
                     if (countProgramm == nextPosition) continue;
@@ -107,8 +133,9 @@ namespace WindowsFormsApp4
                     
                     formGUI.BeginInvoke((Action)(()=> {
                         labelinfor.Text = "line " + countProgramm + ": " + lineCmd;
-                        setLog("line", countProgramm + ": " + lineCmd);
+                        
                     }));
+                    setLog("line", countProgramm + ": " + lineCmd);
                     //Thread.Sleep(2000);
                     switch (command)
                     {
@@ -194,8 +221,13 @@ namespace WindowsFormsApp4
                             }
                             break;
                         case "waitUser":
-                                /// ждать ответа от формы Юзера
-                                waitUser();
+                            /// ждать ответа от формы Юзера
+                            waitUser();
+                            break;
+                        case "waitTimer":
+                            /// ждать таймер
+                            /// commandsSplit[1] - время в секундах скока прождать
+                            waitTimer(Int32.Parse(commandsSplit[1]));
                             break;
                         case "PressButton":
                             {
@@ -230,6 +262,51 @@ namespace WindowsFormsApp4
                                 startPosition = countProgramm;
                             }
                             break;
+                        case "[MASK]":
+                            {
+                                ///определить atribstring по маске
+                                ///commandsSplit[1] - маска
+                                ///commandsSplit[2] - входящий string
+                                atribstring = Regex.Match(DeformateStringForWords(commandsSplit[2]), commandsSplit[1]).ToString();
+                                setLog("Warning", "{atribstring} = " + atribstring);
+                            }
+                            break;
+                        case "[SUBSTRING]":
+                            {
+                                ///выделение слова из строки
+                                ///commandsSplit[1] - строка
+                                ///commandsSplit[2] - номер слова
+                                atribstring = DeformateStringForWords(commandsSplit[1]).Split(' ')[Int32.Parse(commandsSplit[2])];
+                                setLog("Warning", "{atribstring} = " + atribstring);
+                            }
+                            break;
+                        case "[MATH]":
+                            {
+                                ///простейшие математические операции
+                                ///commandsSplit[1] - первое слагаемое
+                                ///commandsSplit[2] - математичесий оператор
+                                ///commandsSplit[3] - второе слагаемое
+                                switch (commandsSplit[2])
+                                {
+                                    case "+":
+                                        atribstring = Int32.Parse(DeformateStringForWords(commandsSplit[1])) + Int32.Parse(DeformateStringForWords(commandsSplit[3])) + "";
+                                        break;
+                                    case "-":
+                                        atribstring = Int32.Parse(DeformateStringForWords(commandsSplit[1])) - Int32.Parse(DeformateStringForWords(commandsSplit[3])) + "";
+                                        break;
+                                    case "*":
+                                        atribstring = Int32.Parse(DeformateStringForWords(commandsSplit[1])) * Int32.Parse(DeformateStringForWords(commandsSplit[3])) + "";
+                                        break;
+                                    case "/":
+                                        atribstring = Int32.Parse(DeformateStringForWords(commandsSplit[1])) / Int32.Parse(DeformateStringForWords(commandsSplit[3])) + "";
+                                        break;
+
+                                }
+
+                                setLog("Warning", "{atribstring} = " + atribstring);
+                            }
+                            break;
+
                         case "[IF]":
                             {
                                 ///оператор сравнения
@@ -244,6 +321,17 @@ namespace WindowsFormsApp4
 
                             }
                             break;
+                        case "[INFORMER]":
+                            {
+                                ///вывести сообщение
+                                ///commandsSplit[1] - заголовок
+                                ///commandsSplit[2] - текст
+                                ///commandsSplit[3] - иконка
+                                showNotify(DeformateStringForWords(commandsSplit[1]), DeformateStringForWords(commandsSplit[2]), getToolTipIcon(commandsSplit[3]));
+                                
+
+                            }
+                            break;
                         case "[SAVE]":
                             {
                                 ///сохранение в словарь saveString
@@ -255,11 +343,18 @@ namespace WindowsFormsApp4
                                     saveString.Add(commandsSplit[1], DeformateStringForWords(commandsSplit[2]));
                             }
                             break;
+                        case "[STOP]":
+                            {
+                                ///остановка скрипта
+                                isworking = false;                                
+                            }
+                            break;
                         case "[CLOSE_TAB]":
                             {
                                 ///закрытие активной вкладки
                                 formGUI.Invoke((Action)(() =>
                                 {
+                                    webControlDel = (WebControl) tabControl.TabPages[tabControl.SelectedIndex].Controls[0];
                                     tabControl.TabPages[tabControl.SelectedIndex].Dispose();
                                     setLog("Warning", "CLOSE_TAB");
                                 }));
@@ -270,7 +365,9 @@ namespace WindowsFormsApp4
                             {
                                 ///чтение записи из словаря saveString в {saved}
                                 ///commandsSplit[1] - ключ
-                                saved = saveString[commandsSplit[1]];
+                                if (saveString.ContainsKey(commandsSplit[1]))
+                                    saved = saveString[commandsSplit[1]];
+                                else saved = "NotFoundInSaved";
                             }
                             break;
                         case "[LOG]":
@@ -298,12 +395,44 @@ namespace WindowsFormsApp4
                                 gotoline(stroka, filereaderStream);
                             }
                             break;
+                        case "[CLEAR]":
+                            {
+                                ///очистить память 
+                                ///новый webView() во вкладке
+                                if (webControlDel != null)
+                                {
+                                    webSessionProvider.Views.Remove(webControlDel);
+                                    webControlDel.Dispose();
+                                }
+                            }
+                            break;
 
                     }
                 }
 
             }
         }
+
+        private ToolTipIcon getToolTipIcon(string v)
+        {
+            ToolTipIcon typeIcon = ToolTipIcon.None;
+            switch (v)
+            {
+                case "Error":
+                    typeIcon = ToolTipIcon.Error;
+                    break;
+                case "Info":
+                    typeIcon = ToolTipIcon.Info;
+                    break;
+                case "Warning":
+                    typeIcon = ToolTipIcon.Warning;
+                    break;
+               
+
+            }
+            return typeIcon;
+        }
+
         private void gotoline(int line, StreamReader stream)
         {
             stream.DiscardBufferedData();
@@ -349,9 +478,15 @@ namespace WindowsFormsApp4
         }
         public void setLog(string type, string text)
         {
-            string newlogs = Environment.NewLine + DateTime.Now + " [" + type + "]: " + text;
-            logystring += newlogs;
-            formlog.RefreshLog(newlogs);
+            
+                string newlogs = Environment.NewLine + DateTime.Now + " [" + type + "]: " + text;
+                logystring += newlogs;
+            formGUI.Invoke((Action)(() =>
+            {
+                if (formlog != null)
+                    formlog.RefreshLog(newlogs);
+            }));
+           // Thread.Sleep(5000);
         }
     }
 }

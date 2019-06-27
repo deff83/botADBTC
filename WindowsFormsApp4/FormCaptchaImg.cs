@@ -45,11 +45,22 @@ namespace WindowsFormsApp4
 
         private void button1_Click(object sender, EventArgs e)
         {
+            userEnt();
+        }
+
+        private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if(Convert.ToInt32(e.KeyChar) == 13)
+            {
+                userEnt();
+            }
+        }
+        private void userEnt()
+        {
             this.Hide();
             pm.userword = textBox1.Text;
             pm.UserAnswer = true;
             this.Close();
-
         }
     }
 }
