@@ -17,18 +17,23 @@ namespace WindowsFormsApp4
         private Form formGUI;
         private NotifyIcon notifyIcon1;
         private TabControl tabControl;
+        private AddressBox addressBox1;
         private WebSessionProvider webSessionProvider;
         ///webControl для удаления
         private WebControl webControlDel;
         /// поле если дебаг режим то выводить информацию о работе бота
         /// isworking - работать ли
+        /// isBalanceUse - использовать ли баланс файл
         public bool isDebug = false;
         public bool isworking = false;
+        public bool isBalanceUse = false;
+        public string balancefailPath;
         /// <summary>
         /// PageLoad - страница загрузилась с событием Loaded
         /// UserAnswer - ответ от User получен
         /// </summary>
-        public string logystring { get;  set; }
+        public string logystring { get; set; }
+        public string balancestring { get; set; }
         public FormLogs formlog { get; set; }
         public bool PageLoad = false;
         public bool UserAnswer = false;
@@ -45,7 +50,7 @@ namespace WindowsFormsApp4
         private int countProgramm;
         private Dictionary<string,string> saveString = new Dictionary<string, string>();
         
-        public ProgrammMethods(TabControl tabControl, WebSessionProvider webSessionProvider, Form1 form1, NotifyIcon notifyIcon1)
+        public ProgrammMethods(TabControl tabControl, WebSessionProvider webSessionProvider, Form1 form1, NotifyIcon notifyIcon1, AddressBox addressBox1)
         {
             NOW = new NavigationOnWebControl();
             TCA = new TabControlAwesomium(tabControl, webSessionProvider, this);
@@ -53,6 +58,7 @@ namespace WindowsFormsApp4
             this.notifyIcon1 = notifyIcon1;
             this.tabControl = tabControl;
             this.webSessionProvider = webSessionProvider;
+            this.addressBox1 = addressBox1;
         }
 
         public void AddPages(TabControl tabControl) // При загрузки формы добавляет 2 вкладки на TabControl
@@ -354,7 +360,7 @@ namespace WindowsFormsApp4
                                 ///закрытие активной вкладки
                                 formGUI.Invoke((Action)(() =>
                                 {
-                                    webControlDel = (WebControl) tabControl.TabPages[tabControl.SelectedIndex].Controls[0];
+                                    tabControl.TabPages[tabControl.SelectedIndex].Controls[0].Dispose();
                                     tabControl.TabPages[tabControl.SelectedIndex].Dispose();
                                     setLog("Warning", "CLOSE_TAB");
                                 }));
@@ -399,10 +405,33 @@ namespace WindowsFormsApp4
                             {
                                 ///очистить память 
                                 ///новый webView() во вкладке
-                                if (webControlDel != null)
+
+                                GC.Collect();
+                                GC.WaitForFullGCComplete();
+                            }
+                            break;
+                        case "[EXIT]":
+                            {
+                                ///очистить память 
+                                ///новый webView() во вкладке
+                                //waitTimer(10);
+                                GC.Collect();
+                                GC.WaitForFullGCComplete();
+                                Environment.Exit(0);
+                            }
+                            break;
+
+                        case "[BALANCE]":
+                            {
+                                ///записать в балансе
+                                ///commandsSplit[1] - что записать
+                                if (isBalanceUse)
                                 {
-                                    webSessionProvider.Views.Remove(webControlDel);
-                                    webControlDel.Dispose();
+                                    using (StreamWriter filebalanceStream = new StreamWriter(balancefailPath))
+                                    {
+                                        filebalanceStream.WriteLine(DeformateStringForWords(commandsSplit[1]), true);
+                                        filebalanceStream.Flush();
+                                    }
                                 }
                             }
                             break;
@@ -470,10 +499,13 @@ namespace WindowsFormsApp4
         {
             formGUI.Invoke((Action)(() =>
             {
-                notifyIcon1.BalloonTipIcon = tooltip;
-                notifyIcon1.BalloonTipText = text;
-                notifyIcon1.BalloonTipTitle = title;
-                notifyIcon1.ShowBalloonTip(10);
+                if (text != null && title != null && tooltip != null)
+                {
+                    notifyIcon1.BalloonTipIcon = tooltip;
+                    notifyIcon1.BalloonTipText = text;
+                    notifyIcon1.BalloonTipTitle = title;
+                    notifyIcon1.ShowBalloonTip(10);
+                }
             }));
         }
         public void setLog(string type, string text)

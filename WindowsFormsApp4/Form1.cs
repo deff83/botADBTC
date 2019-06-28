@@ -21,17 +21,29 @@ namespace WindowsFormsApp4
         private string registrPath = @"Software\MyProgrammDeff83";
         private bool Hide = false;
         
+
+
         public RegistryKey currentUser { get; private set; }
         public RegistryKey myProgramm { get; private set; }
-       
-        public Form1()
+
+        public Form1(string[] args)
         {
             InitializeComponent();
+            if (args.Length > 0)
+                if (args[0] != null)
+                {
+                    currentUser = Registry.CurrentUser;
+                    using (myProgramm = currentUser.OpenSubKey(registrPath, true))
+                        myProgramm.SetValue("pathConfig", args[0]);
+                }
+
+
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            pm = new ProgrammMethods(tabControl1, webSessionProvider1, this, notifyIcon1);
+           
+            pm = new ProgrammMethods(tabControl1, webSessionProvider1, this, notifyIcon1, addressBox1);
             pm.AddPages(tabControl1);
             splitContainer1.IsSplitterFixed = true;
 
@@ -70,7 +82,7 @@ namespace WindowsFormsApp4
         {
             //инициализация программы
             currentUser = Registry.CurrentUser;
-            string path;
+            string path, balance;
             using (myProgramm = currentUser.CreateSubKey(registrPath))
             {
                 path = (string)myProgramm.GetValue("pathConfig");
@@ -115,6 +127,16 @@ namespace WindowsFormsApp4
 
                     }
                 };
+            }
+            using (myProgramm = currentUser.CreateSubKey(registrPath))
+            {
+                balance = (string)myProgramm.GetValue("pathBalance");
+            };
+            if (balance != null)
+            {
+                textBoxBalance.Text = balance;
+                pm.isBalanceUse = true;
+                pm.balancefailPath = balance;
             }
             notifyIcon1.ContextMenuStrip = contextMenuStrip2;
             notifyIcon1.Visible = true;
@@ -235,6 +257,21 @@ namespace WindowsFormsApp4
         private void стопToolStripMenuItem_Click(object sender, EventArgs e)
         {
             pm.isworking = false;
+        }
+
+        private void button3_Click_1(object sender, EventArgs e)
+        {
+            openFileDialog2.ShowDialog();
+        }
+
+        private void openFileDialog2_FileOk(object sender, CancelEventArgs e)
+        {
+            textBoxBalance.Text = ((OpenFileDialog)sender).FileName;
+            pm.balancefailPath = textBoxBalance.Text;
+            using (myProgramm = currentUser.OpenSubKey(registrPath, true))
+                myProgramm.SetValue("pathBalance", textBoxBalance.Text);
+            pm.isBalanceUse = true;
+            
         }
     }
 }
