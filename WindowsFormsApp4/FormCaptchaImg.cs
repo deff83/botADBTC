@@ -22,7 +22,7 @@ namespace WindowsFormsApp4
             this.HTMLCode = HTMLCode;
             webBrowser1.DocumentText = HTMLCode;
             this.pm = pm;
-
+            
         }
 
         private void textBox1_Enter(object sender, EventArgs e)
@@ -61,6 +61,14 @@ namespace WindowsFormsApp4
             pm.userword = textBox1.Text;
             pm.UserAnswer = true;
             this.Close();
+        }
+
+        private void FormCaptchaImg_Load(object sender, EventArgs e)
+        {
+            if (textBox1.CanSelect)
+            {
+                textBox1.Select();
+            }
         }
     }
 }

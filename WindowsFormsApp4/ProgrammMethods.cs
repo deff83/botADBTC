@@ -427,7 +427,7 @@ namespace WindowsFormsApp4
                                 ///commandsSplit[1] - что записать
                                 if (isBalanceUse)
                                 {
-                                    using (StreamWriter filebalanceStream = new StreamWriter(balancefailPath))
+                                    using (StreamWriter filebalanceStream = new StreamWriter(balancefailPath, true))
                                     {
                                         filebalanceStream.WriteLine(DeformateStringForWords(commandsSplit[1]), true);
                                         filebalanceStream.Flush();
@@ -493,6 +493,7 @@ namespace WindowsFormsApp4
             return instring
                 .Replace("{userword}", userword)
                 .Replace("{atribstring}", atribstring)
+                .Replace("{time}",  DateTime.Now.ToString())
                 .Replace("{saved}", saved);
         }
         public void showNotify(string title, string text, ToolTipIcon tooltip)

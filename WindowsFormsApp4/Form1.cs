@@ -20,7 +20,7 @@ namespace WindowsFormsApp4
         public bool PageLoad = false;
         private string registrPath = @"Software\MyProgrammDeff83";
         private bool Hide = false;
-        
+        private string cmdargs;
 
 
         public RegistryKey currentUser { get; private set; }
@@ -32,11 +32,9 @@ namespace WindowsFormsApp4
             if (args.Length > 0)
                 if (args[0] != null)
                 {
-                    currentUser = Registry.CurrentUser;
-                    using (myProgramm = currentUser.OpenSubKey(registrPath, true))
-                        myProgramm.SetValue("pathConfig", args[0]);
-                }
-
+                    cmdargs = args[0];
+                };
+            
 
         }
 
@@ -83,10 +81,14 @@ namespace WindowsFormsApp4
             //инициализация программы
             currentUser = Registry.CurrentUser;
             string path, balance;
-            using (myProgramm = currentUser.CreateSubKey(registrPath))
+            if (cmdargs != null) { path = cmdargs; }//если была комманда из cmd с параметром
+            else
             {
-                path = (string)myProgramm.GetValue("pathConfig");
-            };
+                using (myProgramm = currentUser.CreateSubKey(registrPath))
+                {
+                    path = (string)myProgramm.GetValue("pathConfig");
+                };
+            }
             if (path != null)
             {
                 textBoxFolderPath.Text = path;
