@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -314,6 +315,34 @@ namespace WindowsFormsApp4
                                 setLog("Warning", "{atribstring} = " + atribstring);
                             }
                             break;
+                        case "[MATHD]":
+                            {
+                                ///простейшие математические операции
+                                ///commandsSplit[1] - первое слагаемое
+                                ///commandsSplit[2] - математичесий оператор
+                                ///commandsSplit[3] - второе слагаемое
+                               
+                                
+                                switch (commandsSplit[2])
+                                {
+                                    case "+":
+                                        atribstring = (Double.Parse(DeformateStringForWords(commandsSplit[1]), CultureInfo.InvariantCulture) + Double.Parse(DeformateStringForWords(commandsSplit[3]), CultureInfo.InvariantCulture)).ToString("0.00000000");
+                                        break;
+                                    case "-":
+                                        atribstring = (Double.Parse(DeformateStringForWords(commandsSplit[1]), CultureInfo.InvariantCulture) - Double.Parse(DeformateStringForWords(commandsSplit[3]), CultureInfo.InvariantCulture)).ToString("0.00000000");
+                                        break;
+                                    case "*":
+                                        atribstring = (Double.Parse(DeformateStringForWords(commandsSplit[1]), CultureInfo.InvariantCulture) * Double.Parse(DeformateStringForWords(commandsSplit[3]), CultureInfo.InvariantCulture)).ToString("0.00000000");
+                                        break;
+                                    case "/":
+                                        atribstring = (Double.Parse(DeformateStringForWords(commandsSplit[1]), CultureInfo.InvariantCulture) / Double.Parse(DeformateStringForWords(commandsSplit[3]), CultureInfo.InvariantCulture)).ToString("0.00000000");
+                                        break;
+
+                                }
+                                setLog("Warning", "{atribstring} = " + atribstring);
+
+                            }
+                            break;
 
                         case "[IF]":
                             {
@@ -417,9 +446,8 @@ namespace WindowsFormsApp4
                                 ///очистить память 
                                 ///новый webView() во вкладке
                                 //waitTimer(10);
-                                GC.Collect();
-                                GC.WaitForFullGCComplete();
-                                Environment.Exit(0);
+
+                                Application.Exit();
                             }
                             break; 
 
@@ -457,8 +485,38 @@ namespace WindowsFormsApp4
                                 formGUI.Invoke((Action)(() => {
 
                                     splitContainerUp.Hide();
-                                    splitContainerUp.Height = 10;
+                                   // TextBox textUserBox = new TextBox();
+                                    Button button_ok = new Button();
+                                    /*textUserBox.Dock = DockStyle.Bottom;
+                                    textUserBox.Font = new Font("Times New Roman", 13, FontStyle.Regular);
+                                    textUserBox.Height = 40;
+                                    textUserBox.KeyPress += (s,e) => {
+                                        if (Convert.ToInt32(e.KeyChar) == 13)
+                                        {
+                                            userEnt(textUserBox, button_ok);
+                                        }
+                                        
+                                    };*/
+                                    
+                                    button_ok.Dock = DockStyle.Bottom;
+                                    button_ok.Text = "Отправить";
+                                    button_ok.Font = new Font("Times New Roman", 13, FontStyle.Regular);
+                                    button_ok.Height = 40;
+                                    button_ok.Click += (s,e) => {
+                                        userEnt(button_ok);
+                                    };
+                                    formGUI.Controls.AddRange(new Control[]{ button_ok});
+                                    formGUI.Size = new Size(500,780);
+                                    formGUI.Location = new Point(10);
+                                    formGUI.Show();
+                                    formGUI.WindowState = FormWindowState.Normal;
+
+                                    /*if (textUserBox.CanSelect)
+                                    {
+                                        textUserBox.Select();
+                                    }*/
                                 }));
+                                waitUser();
                             }
                             break;
 
@@ -546,6 +604,18 @@ namespace WindowsFormsApp4
                     formlog.RefreshLog(newlogs);
             }));
            // Thread.Sleep(5000);
+        }
+        private void userEnt( Button button_ok)
+        {
+            
+               
+                UserAnswer = true;
+                formGUI.Hide();
+                splitContainerUp.Show();
+                formGUI.Controls.Remove(button_ok);
+                formGUI.Size = new Size(1000, 600);
+            
+            
         }
     }
 }
