@@ -31,6 +31,8 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.button3 = new System.Windows.Forms.Button();
+            this.textBoxBalance = new System.Windows.Forms.TextBox();
             this.labelInfo = new System.Windows.Forms.Label();
             this.button9 = new System.Windows.Forms.Button();
             this.button7 = new System.Windows.Forms.Button();
@@ -44,7 +46,6 @@
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
             this.button5 = new System.Windows.Forms.Button();
             this.addressBox1 = new Awesomium.Windows.Forms.AddressBox();
-            this.splitter1 = new System.Windows.Forms.Splitter();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.з0акрытьВклпToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -57,9 +58,8 @@
             this.logsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.настройкиToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.выходToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.textBoxBalance = new System.Windows.Forms.TextBox();
-            this.button3 = new System.Windows.Forms.Button();
             this.openFileDialog2 = new System.Windows.Forms.OpenFileDialog();
+            this.panel2 = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -68,6 +68,7 @@
             this.toolStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.contextMenuStrip2.SuspendLayout();
+            this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -79,31 +80,37 @@
             // 
             // splitContainer1.Panel1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.button3);
-            this.splitContainer1.Panel1.Controls.Add(this.textBoxBalance);
-            this.splitContainer1.Panel1.Controls.Add(this.labelInfo);
-            this.splitContainer1.Panel1.Controls.Add(this.button9);
-            this.splitContainer1.Panel1.Controls.Add(this.button7);
-            this.splitContainer1.Panel1.Controls.Add(this.textBoxFolderPath);
-            this.splitContainer1.Panel1.Controls.Add(this.button2);
-            this.splitContainer1.Panel1.Controls.Add(this.button1);
-            this.splitContainer1.Panel1.Controls.Add(this.panel1);
-            this.splitContainer1.Panel1.Controls.Add(this.button5);
-            this.splitContainer1.Panel1.Controls.Add(this.addressBox1);
-            this.splitContainer1.Panel1.Controls.Add(this.splitter1);
+            this.splitContainer1.Panel1.Controls.Add(this.panel2);
             this.splitContainer1.Panel1.Padding = new System.Windows.Forms.Padding(5);
             // 
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.tabControl1);
             this.splitContainer1.Size = new System.Drawing.Size(955, 606);
-            this.splitContainer1.SplitterDistance = 174;
+            this.splitContainer1.SplitterDistance = 161;
             this.splitContainer1.TabIndex = 0;
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(660, 60);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(94, 23);
+            this.button3.TabIndex = 19;
+            this.button3.Text = "FileBalance";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click_1);
+            // 
+            // textBoxBalance
+            // 
+            this.textBoxBalance.Location = new System.Drawing.Point(382, 60);
+            this.textBoxBalance.Name = "textBoxBalance";
+            this.textBoxBalance.Size = new System.Drawing.Size(271, 22);
+            this.textBoxBalance.TabIndex = 18;
             // 
             // labelInfo
             // 
             this.labelInfo.AutoSize = true;
-            this.labelInfo.Location = new System.Drawing.Point(130, 111);
+            this.labelInfo.Location = new System.Drawing.Point(138, 85);
             this.labelInfo.Name = "labelInfo";
             this.labelInfo.Size = new System.Drawing.Size(31, 17);
             this.labelInfo.TabIndex = 17;
@@ -111,7 +118,7 @@
             // 
             // button9
             // 
-            this.button9.Location = new System.Drawing.Point(830, 144);
+            this.button9.Location = new System.Drawing.Point(740, 85);
             this.button9.Name = "button9";
             this.button9.Size = new System.Drawing.Size(113, 23);
             this.button9.TabIndex = 16;
@@ -121,7 +128,7 @@
             // 
             // button7
             // 
-            this.button7.Location = new System.Drawing.Point(749, 146);
+            this.button7.Location = new System.Drawing.Point(659, 87);
             this.button7.Name = "button7";
             this.button7.Size = new System.Drawing.Size(75, 23);
             this.button7.TabIndex = 14;
@@ -131,14 +138,14 @@
             // 
             // textBoxFolderPath
             // 
-            this.textBoxFolderPath.Location = new System.Drawing.Point(472, 147);
+            this.textBoxFolderPath.Location = new System.Drawing.Point(382, 88);
             this.textBoxFolderPath.Name = "textBoxFolderPath";
             this.textBoxFolderPath.Size = new System.Drawing.Size(271, 22);
             this.textBoxFolderPath.TabIndex = 13;
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(211, 45);
+            this.button2.Location = new System.Drawing.Point(213, 44);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 10;
@@ -148,7 +155,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(130, 45);
+            this.button1.Location = new System.Drawing.Point(132, 44);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 9;
@@ -159,7 +166,7 @@
             // panel1
             // 
             this.panel1.Controls.Add(this.toolStrip1);
-            this.panel1.Location = new System.Drawing.Point(4, 4);
+            this.panel1.Location = new System.Drawing.Point(6, 31);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(120, 79);
             this.panel1.TabIndex = 8;
@@ -210,7 +217,7 @@
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(794, 45);
+            this.button5.Location = new System.Drawing.Point(678, 31);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(149, 23);
             this.button5.TabIndex = 7;
@@ -223,22 +230,14 @@
             this.addressBox1.AcceptsReturn = true;
             this.addressBox1.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
             this.addressBox1.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
-            this.addressBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.addressBox1.Dock = System.Windows.Forms.DockStyle.Top;
             this.addressBox1.Font = new System.Drawing.Font("Times New Roman", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.addressBox1.Location = new System.Drawing.Point(124, 5);
+            this.addressBox1.Location = new System.Drawing.Point(0, 0);
             this.addressBox1.Name = "addressBox1";
-            this.addressBox1.Size = new System.Drawing.Size(826, 34);
+            this.addressBox1.Size = new System.Drawing.Size(945, 34);
             this.addressBox1.TabIndex = 1;
             this.addressBox1.URL = null;
             this.addressBox1.WebControl = null;
-            // 
-            // splitter1
-            // 
-            this.splitter1.Location = new System.Drawing.Point(5, 5);
-            this.splitter1.Name = "splitter1";
-            this.splitter1.Size = new System.Drawing.Size(119, 164);
-            this.splitter1.TabIndex = 0;
-            this.splitter1.TabStop = false;
             // 
             // tabControl1
             // 
@@ -247,7 +246,7 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(955, 428);
+            this.tabControl1.Size = new System.Drawing.Size(955, 441);
             this.tabControl1.TabIndex = 0;
             this.tabControl1.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.tabControl1_Selecting);
             this.tabControl1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tabControl1_MouseDown);
@@ -326,27 +325,30 @@
             this.выходToolStripMenuItem.Size = new System.Drawing.Size(151, 24);
             this.выходToolStripMenuItem.Text = "выход";
             // 
-            // textBoxBalance
-            // 
-            this.textBoxBalance.Location = new System.Drawing.Point(472, 119);
-            this.textBoxBalance.Name = "textBoxBalance";
-            this.textBoxBalance.Size = new System.Drawing.Size(271, 22);
-            this.textBoxBalance.TabIndex = 18;
-            // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(750, 119);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(94, 23);
-            this.button3.TabIndex = 19;
-            this.button3.Text = "FileBalance";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click_1);
-            // 
             // openFileDialog2
             // 
             this.openFileDialog2.FileName = "openFileDialog2";
             this.openFileDialog2.FileOk += new System.ComponentModel.CancelEventHandler(this.openFileDialog2_FileOk);
+            // 
+            // panel2
+            // 
+            this.panel2.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.panel2.Controls.Add(this.panel1);
+            this.panel2.Controls.Add(this.labelInfo);
+            this.panel2.Controls.Add(this.button3);
+            this.panel2.Controls.Add(this.button5);
+            this.panel2.Controls.Add(this.button1);
+            this.panel2.Controls.Add(this.textBoxBalance);
+            this.panel2.Controls.Add(this.button2);
+            this.panel2.Controls.Add(this.button9);
+            this.panel2.Controls.Add(this.addressBox1);
+            this.panel2.Controls.Add(this.button7);
+            this.panel2.Controls.Add(this.textBoxFolderPath);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel2.Location = new System.Drawing.Point(5, 5);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(945, 133);
+            this.panel2.TabIndex = 20;
             // 
             // Form1
             // 
@@ -358,7 +360,6 @@
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.splitContainer1.Panel1.ResumeLayout(false);
-            this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
@@ -368,6 +369,8 @@
             this.toolStrip1.PerformLayout();
             this.contextMenuStrip1.ResumeLayout(false);
             this.contextMenuStrip2.ResumeLayout(false);
+            this.panel2.ResumeLayout(false);
+            this.panel2.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -380,7 +383,6 @@
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem з0акрытьВклпToolStripMenuItem;
         private Awesomium.Windows.Forms.AddressBox addressBox1;
-        private System.Windows.Forms.Splitter splitter1;
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.ToolStrip toolStrip1;
@@ -404,6 +406,7 @@
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.TextBox textBoxBalance;
         private System.Windows.Forms.OpenFileDialog openFileDialog2;
+        private System.Windows.Forms.Panel panel2;
     }
 }
 

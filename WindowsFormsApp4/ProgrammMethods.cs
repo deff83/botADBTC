@@ -18,6 +18,7 @@ namespace WindowsFormsApp4
         private NotifyIcon notifyIcon1;
         private TabControl tabControl;
         private AddressBox addressBox1;
+        private Panel splitContainerUp;
         private WebSessionProvider webSessionProvider;
         ///webControl для удаления
         private WebControl webControlDel;
@@ -50,7 +51,7 @@ namespace WindowsFormsApp4
         private int countProgramm;
         private Dictionary<string,string> saveString = new Dictionary<string, string>();
         
-        public ProgrammMethods(TabControl tabControl, WebSessionProvider webSessionProvider, Form1 form1, NotifyIcon notifyIcon1, AddressBox addressBox1)
+        public ProgrammMethods(TabControl tabControl, WebSessionProvider webSessionProvider, Form1 form1, NotifyIcon notifyIcon1, AddressBox addressBox1, Panel splitContainerUp)
         {
             NOW = new NavigationOnWebControl();
             TCA = new TabControlAwesomium(tabControl, webSessionProvider, this);
@@ -59,6 +60,7 @@ namespace WindowsFormsApp4
             this.tabControl = tabControl;
             this.webSessionProvider = webSessionProvider;
             this.addressBox1 = addressBox1;
+            this.splitContainerUp = splitContainerUp;
         }
 
         public void AddPages(TabControl tabControl) // При загрузки формы добавляет 2 вкладки на TabControl
@@ -419,7 +421,7 @@ namespace WindowsFormsApp4
                                 GC.WaitForFullGCComplete();
                                 Environment.Exit(0);
                             }
-                            break;
+                            break; 
 
                         case "[BALANCE]":
                             {
@@ -433,6 +435,30 @@ namespace WindowsFormsApp4
                                         filebalanceStream.Flush();
                                     }
                                 }
+                            }
+                            break;
+                        case "[HIDEDIV]":
+                            {
+                                ///скрыть все DIV
+                                ///commandsSplit[1] - что записать
+                                formGUI.Invoke((Action)(() => {
+                                    /// ищется поле по поиску и заполняется из элемента
+                                    /// commandsSplit[1] - по какому типу поиск элемента
+                                    /// commandsSplit[2] - имя типа для поиска
+                                    /// commandsSplit[3] - индекс найденного элемента
+                                    /// commandsSplit[4] - тип стиля display - none или block
+                                    NOW.HideDiv(webControl, getNavigOnWebControl(commandsSplit[1]), commandsSplit[2], Int32.Parse(commandsSplit[3]), commandsSplit[4]);
+                                }));
+                            }
+                            break;
+                        case "FormForCaptcha":
+                            {
+                                ///показать основную форму для капчи
+                                formGUI.Invoke((Action)(() => {
+
+                                    splitContainerUp.Hide();
+                                    splitContainerUp.Height = 10;
+                                }));
                             }
                             break;
 

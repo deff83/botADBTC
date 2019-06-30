@@ -19,7 +19,7 @@ namespace WindowsFormsApp4
         }
         public void RefreshLog(string logi)
         {
-            textBox1.Text += logi;
+            textBox1.AppendText(logi);
         }
         public void DownLog(string logs)
         {

@@ -41,7 +41,7 @@ namespace WindowsFormsApp4
         private void Form1_Load(object sender, EventArgs e)
         {
            
-            pm = new ProgrammMethods(tabControl1, webSessionProvider1, this, notifyIcon1, addressBox1);
+            pm = new ProgrammMethods(tabControl1, webSessionProvider1, this, notifyIcon1, addressBox1, splitContainer1.Panel1);
             pm.AddPages(tabControl1);
             splitContainer1.IsSplitterFixed = true;
 

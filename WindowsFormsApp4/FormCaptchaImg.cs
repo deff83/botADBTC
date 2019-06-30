@@ -15,6 +15,7 @@ namespace WindowsFormsApp4
         private Color textBoxColor;
         private string HTMLCode;
         private ProgrammMethods pm;
+        private bool isClosing = true;
         public FormCaptchaImg(string HTMLCode, ProgrammMethods pm)
         {
             InitializeComponent();
@@ -57,10 +58,16 @@ namespace WindowsFormsApp4
         }
         private void userEnt()
         {
-            this.Hide();
-            pm.userword = textBox1.Text;
-            pm.UserAnswer = true;
-            this.Close();
+            if (textBox1.Text != "")
+            {
+                this.Hide();
+
+                pm.userword = textBox1.Text;
+                pm.UserAnswer = true;
+                isClosing = false;
+                this.Close();
+            }
+
         }
 
         private void FormCaptchaImg_Load(object sender, EventArgs e)
@@ -68,6 +75,16 @@ namespace WindowsFormsApp4
             if (textBox1.CanSelect)
             {
                 textBox1.Select();
+            }
+        }
+
+        private void FormCaptchaImg_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (isClosing)
+            {
+                this.Hide();
+                pm.userword = "0";
+                pm.UserAnswer = true;
             }
         }
     }

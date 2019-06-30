@@ -241,5 +241,28 @@ namespace WindowsFormsApp4
             return webControl.ExecuteJavascriptWithResult(js_code);
             // return js_code;
         }
+
+        internal void HideDiv(WebControl webControl, GetElementBy getElementBy, string Atrribute, int count, string display)
+        {
+            string js_code;
+            if (getElementBy == GetElementBy.Id)
+            {
+                js_code = "document." + Elements[getElementBy] + "('" + Atrribute + "').setAttribute('style','display:"+ display + ";');";
+            }
+            else
+            {
+                if (count == -1)//все элементы скрыть
+                {
+                    js_code = "var appBanners = document." + Elements[getElementBy] + "('" + Atrribute + "'), i; for (var i = 0; i < appBanners.length; i ++) { appBanners[i].setAttribute('style','display:" + display + ";');}";
+                }
+                else
+                {
+                    js_code = "document." + Elements[getElementBy] + "('" + Atrribute + "')[" + count + "].setAttribute('style','display:" + display + ";');";
+                }
+            }
+             
+            webControl.ExecuteJavascriptWithResult(js_code);
+
+        }
     }
 }

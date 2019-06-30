@@ -101,6 +101,7 @@
             this.Controls.Add(this.button1);
             this.Name = "FormCaptchaImg";
             this.Text = "FormCaptchaImg";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormCaptchaImg_FormClosing);
             this.Load += new System.EventHandler(this.FormCaptchaImg_Load);
             this.flowLayoutPanel1.ResumeLayout(false);
             this.flowLayoutPanel1.PerformLayout();
