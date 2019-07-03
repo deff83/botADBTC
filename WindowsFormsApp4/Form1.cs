@@ -21,7 +21,8 @@ namespace WindowsFormsApp4
         private string registrPath = @"Software\MyProgrammDeff83";
         private bool Hide = false;
         private string cmdargs;
-
+        public bool isClosing = false;
+        
 
         public RegistryKey currentUser { get; private set; }
         public RegistryKey myProgramm { get; private set; }
@@ -41,7 +42,7 @@ namespace WindowsFormsApp4
         private void Form1_Load(object sender, EventArgs e)
         {
            
-            pm = new ProgrammMethods(tabControl1, webSessionProvider1, this, notifyIcon1, addressBox1, panelosn);
+            pm = new ProgrammMethods(tabControl1, webSessionProvider1, this, notifyIcon1, addressBox1, panelosn, timer1);
             pm.AddPages(tabControl1);
             
 
@@ -68,7 +69,7 @@ namespace WindowsFormsApp4
         private void ВыходToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //выход из программы
-            Close();
+            Application.Exit();
         }
 
         private void НастройкиToolStripMenuItem_Click(object sender, EventArgs e)
@@ -254,6 +255,7 @@ namespace WindowsFormsApp4
         private void показатьToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Show();
+            WindowState = FormWindowState.Normal;
         }
 
         private void стопToolStripMenuItem_Click(object sender, EventArgs e)
@@ -274,6 +276,28 @@ namespace WindowsFormsApp4
                 myProgramm.SetValue("pathBalance", textBoxBalance.Text);
             pm.isBalanceUse = true;
             
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if(isClosing)
+            e.Cancel = true;
+        }
+        //если окно открыто как formcaptcha то показывать его даже при скрытии
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            tabControl1.SelectedIndex = 0;
+
+            {
+
+                if (tabControl1.TabCount > 2)
+                {
+                    tabControl1.TabPages[tabControl1.TabCount - 2].Controls[0].Dispose();
+                    tabControl1.TabPages[tabControl1.TabCount - 2].Dispose();
+                }
+            }
+            Show();
+            WindowState = FormWindowState.Normal;
         }
     }
 }

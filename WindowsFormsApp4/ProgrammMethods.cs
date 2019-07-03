@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Awesomium.Windows.Forms;
+using Timer = System.Windows.Forms.Timer;
 
 namespace WindowsFormsApp4
 {
@@ -20,6 +21,7 @@ namespace WindowsFormsApp4
         private TabControl tabControl;
         private AddressBox addressBox1;
         private Panel splitContainerUp;
+        private Timer timer;
         private WebSessionProvider webSessionProvider;
         ///webControl для удаления
         private WebControl webControlDel;
@@ -52,7 +54,7 @@ namespace WindowsFormsApp4
         private int countProgramm;
         private Dictionary<string,string> saveString = new Dictionary<string, string>();
         
-        public ProgrammMethods(TabControl tabControl, WebSessionProvider webSessionProvider, Form1 form1, NotifyIcon notifyIcon1, AddressBox addressBox1, Panel splitContainerUp)
+        public ProgrammMethods(TabControl tabControl, WebSessionProvider webSessionProvider, Form1 form1, NotifyIcon notifyIcon1, AddressBox addressBox1, Panel splitContainerUp, Timer timer)
         {
             NOW = new NavigationOnWebControl();
             TCA = new TabControlAwesomium(tabControl, webSessionProvider, this);
@@ -62,6 +64,7 @@ namespace WindowsFormsApp4
             this.webSessionProvider = webSessionProvider;
             this.addressBox1 = addressBox1;
             this.splitContainerUp = splitContainerUp;
+            this.timer = timer;
         }
 
         public void AddPages(TabControl tabControl) // При загрузки формы добавляет 2 вкладки на TabControl
@@ -146,380 +149,447 @@ namespace WindowsFormsApp4
                     }));
                     setLog("line", countProgramm + ": " + lineCmd);
                     //Thread.Sleep(2000);
-                    switch (command)
+                    try
                     {
-                        case "webGo":
-                            {
-                                /// загрузка страници
-                                /// commandsSplit[1] - URI страницы для загрузки
-                               formGUI.Invoke((Action)(() => {
-                                   webControl.Source = new Uri(commandsSplit[1]);
-                               }));
-                            }
-                            break;
-                        case "waitPage":
-                            {
-                                /// ждать страницу - событи Loaded
-                                /// commandsSplit[1] - время в секундах скока прождать
-                                waitPage(Int32.Parse(commandsSplit[1]));
-                               
-                            }
-                            break;
-                        case "WriteInField":
-                            {
-                                formGUI.Invoke((Action)(() => {
-                                    /// ищется перое поле по поиску и заполняется
-                                    /// commandsSplit[1] - по какому типу поиск поля
-                                    /// commandsSplit[2] - имя типа для поиска
-                                    /// commandsSplit[3] - что вставит в найденное поле
-                                    NOW.WriteInField(webControl, getNavigOnWebControl(commandsSplit[1]), commandsSplit[2], DeformateStringForWords(commandsSplit[3]));
-                                }));
-                            }
-                            break;
-                        case "WriteInFieldInDiv":
-                            {
-                                formGUI.Invoke((Action)(() => {
-                                    /// ищется поле по поиску и заполняется из элемента
-                                    /// commandsSplit[1] - по какому типу поиск элемента
-                                    /// commandsSplit[2] - имя типа для поиска
-                                    /// commandsSplit[3] - индекс найденного элемента
-                                    /// commandsSplit[4] - по какому типу поиск поля
-                                    /// commandsSplit[5] - имя типа для поиска
-                                    /// commandsSplit[6] - индекс поля
-                                    /// commandsSplit[7] - что вставить в найденное поле
-                                    NOW.WriteInFieldInDiv(webControl, getNavigOnWebControl(commandsSplit[1]), commandsSplit[2], Int32.Parse(commandsSplit[3]), getNavigOnWebControl(commandsSplit[4]), commandsSplit[5], Int32.Parse(commandsSplit[6]), DeformateStringForWords(commandsSplit[7]));
-                                }));
-                            }
-                            break;
-                        case "GetAtribInDivInDiv":
-                            {
-                                formGUI.Invoke((Action)(() => {
-                                    /// ищется атрибут у элемента в элементе - найденное записывается в переменную atribstring
-                                    /// commandsSplit[1] - по какому типу поиск поля первого элемента
-                                    /// commandsSplit[2] - имя типа для поиска первого элемента
-                                    /// commandsSplit[3] - какой из найденный элемент из списка использовать
-                                    /// commandsSplit[4] - по какому типу поиск поля внутреннего элемента
-                                    /// commandsSplit[5] - имя типа для поиска внутреннего элемента
-                                    /// commandsSplit[6] - какой из найденный элемент из списка использовать
-                                    /// commandsSplit[7] - какой атрибут нужен
-                                    atribstring = NOW.GetAtribInDivInDiv(webControl, getNavigOnWebControl(commandsSplit[1]), commandsSplit[2], Int32.Parse(commandsSplit[3]), getNavigOnWebControl(commandsSplit[4]), commandsSplit[5], Int32.Parse(commandsSplit[6]), commandsSplit[7]);
-                                    setLog("Warning", "{atribstring} = " + atribstring);
-                                }));
-                            }
-                            break;
-                        case "GetAtribInDiv":
-                            {
-                                formGUI.Invoke((Action)(() => {
-                                    /// ищется атрибут у элемента в элементе - найденное записывается в переменную atribstring
-                                    /// commandsSplit[1] - по какому типу поиск поля первого элемента
-                                    /// commandsSplit[2] - имя типа для поиска первого элемента
-                                    /// commandsSplit[3] - какой из найденный элемент из списка использовать
-                                    /// commandsSplit[4] - какой атрибут нужен
-                                    atribstring = NOW.GetAtribInDiv(webControl, getNavigOnWebControl(commandsSplit[1]), commandsSplit[2], Int32.Parse(commandsSplit[3]),  commandsSplit[4]);
-                                    setLog("Warning", "{atribstring} = " + atribstring);
-                                }));
-                            }
-                            break;
-                        case "FormHTML":
-                            {
-                                formGUI.Invoke((Action)(() => {
-                                    /// открытие нового окна с html кодом
-                                    /// commandsSplit[1] - HTML код с параметрами 
-                                    new FormCaptchaImg(DeformateStringForWords(commandsSplit[1]), this).Show();
-                                }));
-                            }
-                            break;
-                        case "waitUser":
-                            /// ждать ответа от формы Юзера
-                            waitUser();
-                            break;
-                        case "waitTimer":
-                            /// ждать таймер
-                            /// commandsSplit[1] - время в секундах скока прождать
-                            waitTimer(Int32.Parse(commandsSplit[1]));
-                            break;
-                        case "PressButton":
-                            {
-                                formGUI.Invoke((Action)(() => {
-                                    /// ищется атрибут у элемента в элементе - найденное записывается в переменную atribstring
-                                    /// commandsSplit[1] - по какому типу поиск кнопки input
-                                    /// commandsSplit[2] - имя типа для поиска кнопки
-                                    /// commandsSplit[3] - номер элемента
-                                    /// commandsSplit[4] - действие с кнопкой (Например click)
-                                    NOW.PressButton(webControl, getNavigOnWebControl(commandsSplit[1]), commandsSplit[2], Int32.Parse(commandsSplit[3]), commandsSplit[4]);
-                                }));
-                            }
-                            break;
-                        case "PressButtonInDIV":
-                            {
-                                formGUI.Invoke((Action)(() => {
-                                    /// ищется атрибут у элемента в элементе - найденное записывается в переменную atribstring
-                                    /// commandsSplit[1] - по какому типу поиск элемента в котором кнопка 
-                                    /// commandsSplit[2] - имя типа для поиска элемента
-                                    /// commandsSplit[3] - номер элемента
-                                    /// commandsSplit[4] - по какому типу поиск кнопки input
-                                    /// commandsSplit[5] - имя типа для поиска кнопки
-                                    /// commandsSplit[6] - номер элемента
-                                    /// commandsSplit[7] - действие с кнопкой (Например click)
-                                    NOW.PressButtonInDIV(webControl, getNavigOnWebControl(commandsSplit[1]), commandsSplit[2], Int32.Parse(commandsSplit[3]), getNavigOnWebControl(commandsSplit[4]), commandsSplit[5], Int32.Parse(commandsSplit[6]), commandsSplit[7]);
-                                }));
-                            }
-                            break;
-                        case "[SUB_PROGRAMM]":
-                            {
-                                ///меткак куда перейти
-                                startPosition = countProgramm;
-                            }
-                            break;
-                        case "[MASK]":
-                            {
-                                ///определить atribstring по маске
-                                ///commandsSplit[1] - маска
-                                ///commandsSplit[2] - входящий string
-                                atribstring = Regex.Match(DeformateStringForWords(commandsSplit[2]), commandsSplit[1]).ToString();
-                                setLog("Warning", "{atribstring} = " + atribstring);
-                            }
-                            break;
-                        case "[SUBSTRING]":
-                            {
-                                ///выделение слова из строки
-                                ///commandsSplit[1] - строка
-                                ///commandsSplit[2] - номер слова
-                                atribstring = DeformateStringForWords(commandsSplit[1]).Split(' ')[Int32.Parse(commandsSplit[2])];
-                                setLog("Warning", "{atribstring} = " + atribstring);
-                            }
-                            break;
-                        case "[MATH]":
-                            {
-                                ///простейшие математические операции
-                                ///commandsSplit[1] - первое слагаемое
-                                ///commandsSplit[2] - математичесий оператор
-                                ///commandsSplit[3] - второе слагаемое
-                                switch (commandsSplit[2])
+                        switch (command)
+                        {
+                            case "webGo":
                                 {
-                                    case "+":
-                                        atribstring = Int32.Parse(DeformateStringForWords(commandsSplit[1])) + Int32.Parse(DeformateStringForWords(commandsSplit[3])) + "";
-                                        break;
-                                    case "-":
-                                        atribstring = Int32.Parse(DeformateStringForWords(commandsSplit[1])) - Int32.Parse(DeformateStringForWords(commandsSplit[3])) + "";
-                                        break;
-                                    case "*":
-                                        atribstring = Int32.Parse(DeformateStringForWords(commandsSplit[1])) * Int32.Parse(DeformateStringForWords(commandsSplit[3])) + "";
-                                        break;
-                                    case "/":
-                                        atribstring = Int32.Parse(DeformateStringForWords(commandsSplit[1])) / Int32.Parse(DeformateStringForWords(commandsSplit[3])) + "";
-                                        break;
-
-                                }
-
-                                setLog("Warning", "{atribstring} = " + atribstring);
-                            }
-                            break;
-                        case "[MATHD]":
-                            {
-                                ///простейшие математические операции
-                                ///commandsSplit[1] - первое слагаемое
-                                ///commandsSplit[2] - математичесий оператор
-                                ///commandsSplit[3] - второе слагаемое
-                               
-                                
-                                switch (commandsSplit[2])
-                                {
-                                    case "+":
-                                        atribstring = (Double.Parse(DeformateStringForWords(commandsSplit[1]), CultureInfo.InvariantCulture) + Double.Parse(DeformateStringForWords(commandsSplit[3]), CultureInfo.InvariantCulture)).ToString("0.00000000");
-                                        break;
-                                    case "-":
-                                        atribstring = (Double.Parse(DeformateStringForWords(commandsSplit[1]), CultureInfo.InvariantCulture) - Double.Parse(DeformateStringForWords(commandsSplit[3]), CultureInfo.InvariantCulture)).ToString("0.00000000");
-                                        break;
-                                    case "*":
-                                        atribstring = (Double.Parse(DeformateStringForWords(commandsSplit[1]), CultureInfo.InvariantCulture) * Double.Parse(DeformateStringForWords(commandsSplit[3]), CultureInfo.InvariantCulture)).ToString("0.00000000");
-                                        break;
-                                    case "/":
-                                        atribstring = (Double.Parse(DeformateStringForWords(commandsSplit[1]), CultureInfo.InvariantCulture) / Double.Parse(DeformateStringForWords(commandsSplit[3]), CultureInfo.InvariantCulture)).ToString("0.00000000");
-                                        break;
-
-                                }
-                                setLog("Warning", "{atribstring} = " + atribstring);
-
-                            }
-                            break;
-
-                        case "[IF]":
-                            {
-                                ///оператор сравнения
-                                ///commandsSplit[1] - первое поле для сравнения
-                                ///commandsSplit[2] - второе поле для сравнения
-                                ///commandsSplit[3] - переход на стр если true
-                                ///commandsSplit[4] - переход если false
-                                if (DeformateStringForWords(commandsSplit[1]) == DeformateStringForWords(commandsSplit[2]))
-                                    gotoline(Int32.Parse(commandsSplit[3]), filereaderStream);
-                                else
-                                    gotoline(Int32.Parse(commandsSplit[4]), filereaderStream); ;
-
-                            }
-                            break;
-                        case "[INFORMER]":
-                            {
-                                ///вывести сообщение
-                                ///commandsSplit[1] - заголовок
-                                ///commandsSplit[2] - текст
-                                ///commandsSplit[3] - иконка
-                                showNotify(DeformateStringForWords(commandsSplit[1]), DeformateStringForWords(commandsSplit[2]), getToolTipIcon(commandsSplit[3]));
-                                
-
-                            }
-                            break;
-                        case "[SAVE]":
-                            {
-                                ///сохранение в словарь saveString
-                                ///commandsSplit[1] - ключ
-                                ///commandsSplit[2] - значение
-                                if (saveString.ContainsKey(commandsSplit[1]))
-                                    saveString[commandsSplit[1]] = DeformateStringForWords(commandsSplit[2]);
-                                else
-                                    saveString.Add(commandsSplit[1], DeformateStringForWords(commandsSplit[2]));
-                            }
-                            break;
-                        case "[STOP]":
-                            {
-                                ///остановка скрипта
-                                isworking = false;                                
-                            }
-                            break;
-                        case "[CLOSE_TAB]":
-                            {
-                                ///закрытие активной вкладки
-                                formGUI.Invoke((Action)(() =>
-                                {
-                                    tabControl.TabPages[tabControl.SelectedIndex].Controls[0].Dispose();
-                                    tabControl.TabPages[tabControl.SelectedIndex].Dispose();
-                                    setLog("Warning", "CLOSE_TAB");
-                                }));
-                                
-                            }
-                            break;
-                        case "[READ_SAVED]":
-                            {
-                                ///чтение записи из словаря saveString в {saved}
-                                ///commandsSplit[1] - ключ
-                                if (saveString.ContainsKey(commandsSplit[1]))
-                                    saved = saveString[commandsSplit[1]];
-                                else saved = "NotFoundInSaved";
-                            }
-                            break;
-                        case "[LOG]":
-                            {
-                                ///запись лога в событие
-                                ///commandsSplit[1] - текст лога
-                                setLog("PROGRAMMS", DeformateStringForWords(commandsSplit[1]));
-                            }
-                            break;
-                        case "[GOTO_SUB_PROGRAMM]":
-                            {
-                                ///меткак куда перейти
-                                //nextPosition = countProgramm;
-                                filereaderStream.DiscardBufferedData();
-                                filereaderStream.BaseStream.Seek(0, SeekOrigin.Begin);
-                                countProgramm = startPosition;
-                                for (int pos = 0; pos < startPosition; pos++) filereaderStream.ReadLine();
-                            }
-                            break;
-                        case "[GOTO]":
-                            {
-                                ///меткак куда перейти
-                                ///commandsSplit[1] - строка куда перейти
-                                int stroka = Int32.Parse(commandsSplit[1]);
-                                gotoline(stroka, filereaderStream);
-                            }
-                            break;
-                        case "[CLEAR]":
-                            {
-                                ///очистить память 
-                                ///новый webView() во вкладке
-
-                                GC.Collect();
-                                GC.WaitForFullGCComplete();
-                            }
-                            break;
-                        case "[EXIT]":
-                            {
-                                ///очистить память 
-                                ///новый webView() во вкладке
-                                //waitTimer(10);
-
-                                Application.Exit();
-                            }
-                            break; 
-
-                        case "[BALANCE]":
-                            {
-                                ///записать в балансе
-                                ///commandsSplit[1] - что записать
-                                if (isBalanceUse)
-                                {
-                                    using (StreamWriter filebalanceStream = new StreamWriter(balancefailPath, true))
+                                    /// загрузка страници
+                                    /// commandsSplit[1] - URI страницы для загрузки
+                                    formGUI.Invoke((Action)(() =>
                                     {
-                                        filebalanceStream.WriteLine(DeformateStringForWords(commandsSplit[1]), true);
-                                        filebalanceStream.Flush();
+                                        webControl.Source = new Uri(commandsSplit[1]);
+                                    }));
+                                }
+                                break;
+                            case "waitPage":
+                                {
+                                    /// ждать страницу - событи Loaded
+                                    /// commandsSplit[1] - время в секундах скока прождать
+                                    waitPage(Int32.Parse(commandsSplit[1]));
+
+                                }
+                                break;
+                            case "WriteInField":
+                                {
+                                    formGUI.Invoke((Action)(() =>
+                                    {
+                                        /// ищется перое поле по поиску и заполняется
+                                        /// commandsSplit[1] - по какому типу поиск поля
+                                        /// commandsSplit[2] - имя типа для поиска
+                                        /// commandsSplit[3] - что вставит в найденное поле
+                                        NOW.WriteInField(webControl, getNavigOnWebControl(commandsSplit[1]), commandsSplit[2], DeformateStringForWords(commandsSplit[3]));
+                                    }));
+                                }
+                                break;
+                            case "WriteInFieldInDiv":
+                                {
+                                    formGUI.Invoke((Action)(() =>
+                                    {
+                                        /// ищется поле по поиску и заполняется из элемента
+                                        /// commandsSplit[1] - по какому типу поиск элемента
+                                        /// commandsSplit[2] - имя типа для поиска
+                                        /// commandsSplit[3] - индекс найденного элемента
+                                        /// commandsSplit[4] - по какому типу поиск поля
+                                        /// commandsSplit[5] - имя типа для поиска
+                                        /// commandsSplit[6] - индекс поля
+                                        /// commandsSplit[7] - что вставить в найденное поле
+                                        NOW.WriteInFieldInDiv(webControl, getNavigOnWebControl(commandsSplit[1]), commandsSplit[2], Int32.Parse(commandsSplit[3]), getNavigOnWebControl(commandsSplit[4]), commandsSplit[5], Int32.Parse(commandsSplit[6]), DeformateStringForWords(commandsSplit[7]));
+                                    }));
+                                }
+                                break;
+                            case "GetAtribInDivInDiv":
+                                {
+                                    formGUI.Invoke((Action)(() =>
+                                    {
+                                        /// ищется атрибут у элемента в элементе - найденное записывается в переменную atribstring
+                                        /// commandsSplit[1] - по какому типу поиск поля первого элемента
+                                        /// commandsSplit[2] - имя типа для поиска первого элемента
+                                        /// commandsSplit[3] - какой из найденный элемент из списка использовать
+                                        /// commandsSplit[4] - по какому типу поиск поля внутреннего элемента
+                                        /// commandsSplit[5] - имя типа для поиска внутреннего элемента
+                                        /// commandsSplit[6] - какой из найденный элемент из списка использовать
+                                        /// commandsSplit[7] - какой атрибут нужен
+                                        atribstring = NOW.GetAtribInDivInDiv(webControl, getNavigOnWebControl(commandsSplit[1]), commandsSplit[2], Int32.Parse(commandsSplit[3]), getNavigOnWebControl(commandsSplit[4]), commandsSplit[5], Int32.Parse(commandsSplit[6]), commandsSplit[7]);
+                                        setLog("Warning", "{atribstring} = " + atribstring);
+                                    }));
+                                }
+                                break;
+                            case "GetAtribInDiv":
+                                {
+                                    formGUI.Invoke((Action)(() =>
+                                    {
+                                        /// ищется атрибут у элемента в элементе - найденное записывается в переменную atribstring
+                                        /// commandsSplit[1] - по какому типу поиск поля первого элемента
+                                        /// commandsSplit[2] - имя типа для поиска первого элемента
+                                        /// commandsSplit[3] - какой из найденный элемент из списка использовать
+                                        /// commandsSplit[4] - какой атрибут нужен
+                                        atribstring = NOW.GetAtribInDiv(webControl, getNavigOnWebControl(commandsSplit[1]), commandsSplit[2], Int32.Parse(commandsSplit[3]), commandsSplit[4]);
+                                        setLog("Warning", "{atribstring} = " + atribstring);
+                                    }));
+                                }
+                                break;
+                            case "FormHTML":
+                                {
+                                    formGUI.Invoke((Action)(() =>
+                                    {
+                                        /// открытие нового окна с html кодом
+                                        /// commandsSplit[1] - HTML код с параметрами 
+                                        new FormCaptchaImg(DeformateStringForWords(commandsSplit[1]), this).Show();
+                                    }));
+                                }
+                                break;
+                            case "waitUser":
+                                /// ждать ответа от формы Юзера
+                                waitUser();
+                                break;
+                            case "waitTimer":
+                                /// ждать таймер
+                                /// commandsSplit[1] - время в секундах скока прождать
+                                waitTimer(Int32.Parse(commandsSplit[1]));
+                                break;
+                            case "PressButton":
+                                {
+                                    formGUI.Invoke((Action)(() =>
+                                    {
+                                        /// ищется атрибут у элемента в элементе - найденное записывается в переменную atribstring
+                                        /// commandsSplit[1] - по какому типу поиск кнопки input
+                                        /// commandsSplit[2] - имя типа для поиска кнопки
+                                        /// commandsSplit[3] - номер элемента
+                                        /// commandsSplit[4] - действие с кнопкой (Например click)
+                                        NOW.PressButton(webControl, getNavigOnWebControl(commandsSplit[1]), commandsSplit[2], Int32.Parse(commandsSplit[3]), commandsSplit[4]);
+                                    }));
+                                }
+                                break;
+                            case "PressButtonInDIV":
+                                {
+                                    formGUI.Invoke((Action)(() =>
+                                    {
+                                        /// ищется атрибут у элемента в элементе - найденное записывается в переменную atribstring
+                                        /// commandsSplit[1] - по какому типу поиск элемента в котором кнопка 
+                                        /// commandsSplit[2] - имя типа для поиска элемента
+                                        /// commandsSplit[3] - номер элемента
+                                        /// commandsSplit[4] - по какому типу поиск кнопки input
+                                        /// commandsSplit[5] - имя типа для поиска кнопки
+                                        /// commandsSplit[6] - номер элемента
+                                        /// commandsSplit[7] - действие с кнопкой (Например click)
+                                        NOW.PressButtonInDIV(webControl, getNavigOnWebControl(commandsSplit[1]), commandsSplit[2], Int32.Parse(commandsSplit[3]), getNavigOnWebControl(commandsSplit[4]), commandsSplit[5], Int32.Parse(commandsSplit[6]), commandsSplit[7]);
+                                    }));
+                                }
+                                break;
+                            case "[SUB_PROGRAMM]":
+                                {
+                                    ///меткак куда перейти
+                                    startPosition = countProgramm;
+                                }
+                                break;
+                            case "[MASK]":
+                                {
+                                    ///определить atribstring по маске
+                                    ///commandsSplit[1] - маска
+                                    ///commandsSplit[2] - входящий string
+                                    atribstring = Regex.Match(DeformateStringForWords(commandsSplit[2]), commandsSplit[1]).ToString();
+                                    setLog("Warning", "{atribstring} = " + atribstring);
+                                }
+                                break;
+                            case "[SUBSTRING]":
+                                {
+                                    ///выделение слова из строки
+                                    ///commandsSplit[1] - строка
+                                    ///commandsSplit[2] - номер слова
+                                    atribstring = DeformateStringForWords(commandsSplit[1]).Split(' ')[Int32.Parse(commandsSplit[2])];
+                                    setLog("Warning", "{atribstring} = " + atribstring);
+                                }
+                                break;
+                            case "[MATH]":
+                                {
+                                    ///простейшие математические операции
+                                    ///commandsSplit[1] - первое слагаемое
+                                    ///commandsSplit[2] - математичесий оператор
+                                    ///commandsSplit[3] - второе слагаемое
+                                    switch (commandsSplit[2])
+                                    {
+                                        case "+":
+                                            atribstring = Int32.Parse(DeformateStringForWords(commandsSplit[1])) + Int32.Parse(DeformateStringForWords(commandsSplit[3])) + "";
+                                            break;
+                                        case "-":
+                                            atribstring = Int32.Parse(DeformateStringForWords(commandsSplit[1])) - Int32.Parse(DeformateStringForWords(commandsSplit[3])) + "";
+                                            break;
+                                        case "*":
+                                            atribstring = Int32.Parse(DeformateStringForWords(commandsSplit[1])) * Int32.Parse(DeformateStringForWords(commandsSplit[3])) + "";
+                                            break;
+                                        case "/":
+                                            atribstring = Int32.Parse(DeformateStringForWords(commandsSplit[1])) / Int32.Parse(DeformateStringForWords(commandsSplit[3])) + "";
+                                            break;
+
+                                    }
+
+                                    setLog("Warning", "{atribstring} = " + atribstring);
+                                }
+                                break;
+                            case "[MATHD]":
+                                {
+                                    ///простейшие математические операции
+                                    ///commandsSplit[1] - первое слагаемое
+                                    ///commandsSplit[2] - математичесий оператор
+                                    ///commandsSplit[3] - второе слагаемое
+
+
+                                    switch (commandsSplit[2])
+                                    {
+                                        case "+":
+                                            atribstring = (Double.Parse(DeformateStringForWords(commandsSplit[1]), CultureInfo.InvariantCulture) + Double.Parse(DeformateStringForWords(commandsSplit[3]), CultureInfo.InvariantCulture)).ToString("0.00000000");
+                                            break;
+                                        case "-":
+                                            atribstring = (Double.Parse(DeformateStringForWords(commandsSplit[1]), CultureInfo.InvariantCulture) - Double.Parse(DeformateStringForWords(commandsSplit[3]), CultureInfo.InvariantCulture)).ToString("0.00000000");
+                                            break;
+                                        case "*":
+                                            atribstring = (Double.Parse(DeformateStringForWords(commandsSplit[1]), CultureInfo.InvariantCulture) * Double.Parse(DeformateStringForWords(commandsSplit[3]), CultureInfo.InvariantCulture)).ToString("0.00000000");
+                                            break;
+                                        case "/":
+                                            atribstring = (Double.Parse(DeformateStringForWords(commandsSplit[1]), CultureInfo.InvariantCulture) / Double.Parse(DeformateStringForWords(commandsSplit[3]), CultureInfo.InvariantCulture)).ToString("0.00000000");
+                                            break;
+
+                                    }
+                                    setLog("Warning", "{atribstring} = " + atribstring);
+
+                                }
+                                break;
+
+                            case "[IF]":
+                                {
+                                    ///оператор сравнения
+                                    ///commandsSplit[1] - первое поле для сравнения
+                                    ///commandsSplit[2] - второе поле для сравнения
+                                    ///commandsSplit[3] - переход на стр если true
+                                    ///commandsSplit[4] - переход если false
+                                    if (DeformateStringForWords(commandsSplit[1]) == DeformateStringForWords(commandsSplit[2]))
+                                        gotoline(Int32.Parse(commandsSplit[3]), filereaderStream);
+                                    else
+                                        gotoline(Int32.Parse(commandsSplit[4]), filereaderStream); ;
+
+                                }
+                                break;
+                            case "[INFORMER]":
+                                {
+                                    ///вывести сообщение
+                                    ///commandsSplit[1] - заголовок
+                                    ///commandsSplit[2] - текст
+                                    ///commandsSplit[3] - иконка
+                                    showNotify(DeformateStringForWords(commandsSplit[1]), DeformateStringForWords(commandsSplit[2]), getToolTipIcon(commandsSplit[3]));
+
+
+                                }
+                                break;
+                            case "[SAVE]":
+                                {
+                                    ///сохранение в словарь saveString
+                                    ///commandsSplit[1] - ключ
+                                    ///commandsSplit[2] - значение
+                                    if (saveString.ContainsKey(commandsSplit[1]))
+                                        saveString[commandsSplit[1]] = DeformateStringForWords(commandsSplit[2]);
+                                    else
+                                        saveString.Add(commandsSplit[1], DeformateStringForWords(commandsSplit[2]));
+                                }
+                                break;
+                            case "[STOP]":
+                                {
+                                    ///остановка скрипта
+                                    isworking = false;
+                                }
+                                break;
+                            case "[CLOSE_TAB]":
+                                {
+                                    ///закрытие активной вкладки
+                                    ///commandsSplit[1] - ключ
+                                    formGUI.Invoke((Action)(() =>
+                                    {
+                                        string textaddres = addressBox1.AccessibilityObject.Value;
+                                        tabControl.SelectedIndex = 0;
+
+                                        {
+
+                                            if (tabControl.TabCount > 2)
+                                            {
+                                                tabControl.TabPages[tabControl.TabCount - 2].Controls[0].Dispose();
+                                                tabControl.TabPages[tabControl.TabCount - 2].Dispose();
+                                                setLog("Warning", "CLOSE_TAB");
+                                            }
+                                        }
+                                    }));
+
+                                }
+                                break;
+                            case "[CLOSE_TABN]":
+                                {
+                                    ///закрытие активной вкладки
+                                    ///
+                                    formGUI.Invoke((Action)(() =>
+                                    {
+                                        tabControl.TabPages[tabControl.SelectedIndex].Controls[0].Dispose();
+                                        tabControl.TabPages[tabControl.SelectedIndex].Dispose();
+                                        setLog("Warning", "CLOSE_TAB");
+                                    }));
+
+                                }
+                                break;
+                            case "[READ_SAVED]":
+                                {
+                                    ///чтение записи из словаря saveString в {saved}
+                                    ///commandsSplit[1] - ключ
+                                    if (saveString.ContainsKey(commandsSplit[1]))
+                                        saved = saveString[commandsSplit[1]];
+                                    else saved = "NotFoundInSaved";
+                                }
+                                break;
+                            case "[LOG]":
+                                {
+                                    ///запись лога в событие
+                                    ///commandsSplit[1] - текст лога
+                                    setLog("PROGRAMMS", DeformateStringForWords(commandsSplit[1]));
+                                }
+                                break;
+                            case "[GOTO_SUB_PROGRAMM]":
+                                {
+                                    ///меткак куда перейти
+                                    //nextPosition = countProgramm;
+                                    filereaderStream.DiscardBufferedData();
+                                    filereaderStream.BaseStream.Seek(0, SeekOrigin.Begin);
+                                    countProgramm = startPosition;
+                                    for (int pos = 0; pos < startPosition; pos++) filereaderStream.ReadLine();
+                                }
+                                break;
+                            case "[GOTO]":
+                                {
+                                    ///меткак куда перейти
+                                    ///commandsSplit[1] - строка куда перейти
+                                    int stroka = Int32.Parse(commandsSplit[1]);
+                                    gotoline(stroka, filereaderStream);
+                                }
+                                break;
+                            case "[CLEAR]":
+                                {
+                                    ///очистить память 
+                                    ///новый webView() во вкладке
+
+                                    GC.Collect();
+                                    GC.WaitForFullGCComplete();
+                                }
+                                break;
+                            case "[EXIT]":
+                                {
+                                    ///очистить память 
+                                    ///новый webView() во вкладке
+                                    //waitTimer(10);
+
+                                    Application.Exit();
+                                }
+                                break;
+
+                            case "[BALANCE]":
+                                {
+                                    ///записать в балансе
+                                    ///commandsSplit[1] - что записать
+                                    if (isBalanceUse)
+                                    {
+                                        bool uyt = true;
+                                        while (uyt)
+                                        {
+                                            try
+                                            {
+                                                using (StreamWriter filebalanceStream = new StreamWriter(balancefailPath, true))
+                                                {
+                                                    filebalanceStream.WriteLine(DeformateStringForWords(commandsSplit[1]), true);
+                                                    filebalanceStream.Flush();
+                                                    uyt = false;
+                                                }
+                                            }
+                                            catch (Exception e) { }
+                                        }
                                     }
                                 }
-                            }
-                            break;
-                        case "[HIDEDIV]":
-                            {
-                                ///скрыть все DIV
-                                ///commandsSplit[1] - что записать
-                                formGUI.Invoke((Action)(() => {
-                                    /// ищется поле по поиску и заполняется из элемента
-                                    /// commandsSplit[1] - по какому типу поиск элемента
-                                    /// commandsSplit[2] - имя типа для поиска
-                                    /// commandsSplit[3] - индекс найденного элемента
-                                    /// commandsSplit[4] - тип стиля display - none или block
-                                    NOW.HideDiv(webControl, getNavigOnWebControl(commandsSplit[1]), commandsSplit[2], Int32.Parse(commandsSplit[3]), commandsSplit[4]);
-                                }));
-                            }
-                            break;
-                        case "FormForCaptcha":
-                            {
-                                ///показать основную форму для капчи
-                                formGUI.Invoke((Action)(() => {
-
-                                    splitContainerUp.Hide();
-                                   // TextBox textUserBox = new TextBox();
-                                    Button button_ok = new Button();
-                                    /*textUserBox.Dock = DockStyle.Bottom;
-                                    textUserBox.Font = new Font("Times New Roman", 13, FontStyle.Regular);
-                                    textUserBox.Height = 40;
-                                    textUserBox.KeyPress += (s,e) => {
-                                        if (Convert.ToInt32(e.KeyChar) == 13)
-                                        {
-                                            userEnt(textUserBox, button_ok);
-                                        }
-                                        
-                                    };*/
-                                    
-                                    button_ok.Dock = DockStyle.Bottom;
-                                    button_ok.Text = "Отправить";
-                                    button_ok.Font = new Font("Times New Roman", 13, FontStyle.Regular);
-                                    button_ok.Height = 40;
-                                    button_ok.Click += (s,e) => {
-                                        userEnt(button_ok);
-                                    };
-                                    formGUI.Controls.AddRange(new Control[]{ button_ok});
-                                    formGUI.Size = new Size(500,780);
-                                    formGUI.Location = new Point(10);
-                                    formGUI.Show();
-                                    formGUI.WindowState = FormWindowState.Normal;
-
-                                    /*if (textUserBox.CanSelect)
+                                break;
+                            case "[HIDEDIV]":
+                                {
+                                    ///скрыть все DIV
+                                    ///commandsSplit[1] - что записать
+                                    formGUI.Invoke((Action)(() =>
                                     {
-                                        textUserBox.Select();
-                                    }*/
-                                }));
-                                waitUser();
-                            }
-                            break;
+                                        /// ищется поле по поиску и заполняется из элемента
+                                        /// commandsSplit[1] - по какому типу поиск элемента
+                                        /// commandsSplit[2] - имя типа для поиска
+                                        /// commandsSplit[3] - индекс найденного элемента
+                                        /// commandsSplit[4] - тип стиля display - none или block
+                                        NOW.HideDiv(webControl, getNavigOnWebControl(commandsSplit[1]), commandsSplit[2], Int32.Parse(commandsSplit[3]), commandsSplit[4]);
+                                    }));
+                                }
+                                break;
+                            case "FormForCaptcha":
+                                {
+                                    ///показать основную форму для капчи
+                                    ///commandsSplit[1] - длина окна
+                                    ///commandsSplit[2] - ширина окна
+                                    formGUI.Invoke((Action)(() =>
+                                    {
 
+                                        splitContainerUp.Hide();
+                                        // TextBox textUserBox = new TextBox();
+                                        Button button_ok = new Button();
+                                        /*textUserBox.Dock = DockStyle.Bottom;
+                                        textUserBox.Font = new Font("Times New Roman", 13, FontStyle.Regular);
+                                        textUserBox.Height = 40;
+                                        textUserBox.KeyPress += (s,e) => {
+                                            if (Convert.ToInt32(e.KeyChar) == 13)
+                                            {
+                                                userEnt(textUserBox, button_ok);
+                                            }
+
+                                        };*/
+
+                                        button_ok.Dock = DockStyle.Bottom;
+                                        button_ok.Text = "Отправить";
+                                        button_ok.Font = new Font("Times New Roman", 13, FontStyle.Regular);
+                                        button_ok.Height = 40;
+                                        button_ok.Click += (s, e) =>
+                                        {
+                                            userEnt(button_ok);
+                                        };
+                                        formGUI.Controls.AddRange(new Control[] { button_ok });
+                                        formGUI.Size = new Size(Int32.Parse(commandsSplit[1]), Int32.Parse(commandsSplit[2]));
+                                        formGUI.Location = new Point(10);
+                                        formGUI.Show();
+                                        formGUI.WindowState = FormWindowState.Normal;
+                                        ((Form1)formGUI).isClosing = true;
+                                        timer.Start();
+
+                                        /*if (textUserBox.CanSelect)
+                                        {
+                                            textUserBox.Select();
+                                        }*/
+                                    }));
+                                    waitUser();
+                                }
+                                break;
+
+                        }
+                    }catch(Exception e)
+                    {
+                        bool uyt = true;
+                        while (uyt)
+                        {
+                            try
+                            {
+                                using (StreamWriter filebalanceStream = new StreamWriter(balancefailPath, true))
+                                {
+                                    filebalanceStream.WriteLine(DateTime.Now.ToString() + " [ERROR] " + e.Message, true);
+                                    filebalanceStream.Flush();
+                                    uyt = false;
+                                }
+                            }
+                            catch (Exception ex) { }
+                        }
+                        Application.Exit();
                     }
                 }
 
@@ -598,20 +668,24 @@ namespace WindowsFormsApp4
             
                 string newlogs = Environment.NewLine + DateTime.Now + " [" + type + "]: " + text;
                 logystring += newlogs;
-            formGUI.Invoke((Action)(() =>
+            try
             {
-                if (formlog != null)
-                    formlog.RefreshLog(newlogs);
-            }));
+                formGUI.Invoke((Action)(() =>
+                {
+                    if (formlog != null)
+                        formlog.RefreshLog(newlogs);
+                }));
+            }catch(Exception e) { }
            // Thread.Sleep(5000);
         }
         private void userEnt( Button button_ok)
         {
-            
-               
-                UserAnswer = true;
+
+            timer.Stop();
+             UserAnswer = true;
                 formGUI.Hide();
-                splitContainerUp.Show();
+            ((Form1)formGUI).isClosing = false;
+            splitContainerUp.Show();
                 formGUI.Controls.Remove(button_ok);
                 formGUI.Size = new Size(1000, 600);
             
