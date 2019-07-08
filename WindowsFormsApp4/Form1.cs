@@ -6,6 +6,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -21,8 +22,9 @@ namespace WindowsFormsApp4
         private string registrPath = @"Software\MyProgrammDeff83";
         private bool Hide = false;
         private string cmdargs;
+        public string typeCloseTab = null;
         public bool isClosing = false;
-        
+        public string patternForFind;
 
         public RegistryKey currentUser { get; private set; }
         public RegistryKey myProgramm { get; private set; }
@@ -286,14 +288,46 @@ namespace WindowsFormsApp4
         //если окно открыто как formcaptcha то показывать его даже при скрытии
         private void timer1_Tick(object sender, EventArgs e)
         {
-            tabControl1.SelectedIndex = 0;
-
+            if (typeCloseTab != null)
             {
-
-                if (tabControl1.TabCount > 2)
+                switch (typeCloseTab)
                 {
-                    tabControl1.TabPages[tabControl1.TabCount - 2].Controls[0].Dispose();
-                    tabControl1.TabPages[tabControl1.TabCount - 2].Dispose();
+                    case "notClosing":
+                        int i = 0;
+                        while(tabControl1.TabCount > 2)
+                        {
+                            string adres = addressBox1.AccessibilityObject.Value;
+                            if (Regex.Matches(adres, patternForFind).Count  > 0)
+                            {
+                                //пропустить
+                                i++;
+                            }
+                            else
+                            {
+                                //закрыть вкладку
+                            }
+                            {
+                                if (tabControl1.TabCount > 2)
+                                {
+                                    tabControl1.TabPages[tabControl1.TabCount - 2 - i].Controls[0].Dispose();
+                                    tabControl1.TabPages[tabControl1.TabCount - 2 - i].Dispose();
+                                }
+                            }
+                        }
+                        break;
+                }
+            }
+            else
+            {
+                tabControl1.SelectedIndex = 0;
+
+                {
+
+                    if (tabControl1.TabCount > 2)
+                    {
+                        tabControl1.TabPages[tabControl1.TabCount - 2].Controls[0].Dispose();
+                        tabControl1.TabPages[tabControl1.TabCount - 2].Dispose();
+                    }
                 }
             }
             Show();
