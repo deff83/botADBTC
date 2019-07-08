@@ -16,7 +16,7 @@ namespace WindowsFormsApp4
     {
         NavigationOnWebControl NOW;
         public TabControlAwesomium TCA;
-        private Form formGUI;
+        private Form1 formGUI;
         private NotifyIcon notifyIcon1;
         private TabControl tabControl;
         private AddressBox addressBox1;
@@ -53,7 +53,8 @@ namespace WindowsFormsApp4
         private string saved;
         private int countProgramm;
         private Dictionary<string,string> saveString = new Dictionary<string, string>();
-        
+        private Button button_ok;
+
         public ProgrammMethods(TabControl tabControl, WebSessionProvider webSessionProvider, Form1 form1, NotifyIcon notifyIcon1, AddressBox addressBox1, Panel splitContainerUp, Timer timer)
         {
             NOW = new NavigationOnWebControl();
@@ -293,6 +294,13 @@ namespace WindowsFormsApp4
                                     setLog("Warning", "{atribstring} = " + atribstring);
                                 }
                                 break;
+                            case "[RELOAD]":
+                                ///перезагрузить страницу
+                                formGUI.Invoke((Action)(() =>
+                                {
+                                    webControl.Reload(false);
+                                }));
+                                break;
                             case "[SUBSTRING]":
                                 {
                                     ///выделение слова из строки
@@ -356,7 +364,12 @@ namespace WindowsFormsApp4
 
                                 }
                                 break;
-
+                            case "[EMUL]"://testForMoon
+                            formGUI.Invoke((Action)(() =>
+                            {
+                               //NOW.emulBut(webControl);
+                            }));
+                                break;
                             case "[IF]":
                                 {
                                     ///оператор сравнения
@@ -525,50 +538,48 @@ namespace WindowsFormsApp4
                                     }));
                                 }
                                 break;
+                            case "formNorm":
+                                userEnt(button_ok);
+                                break;
+                            case "[IFwebGo]":
+                                ///если страница не загружена
+                                ///commandsSplit[1] - куда перейти
+                                waitPage(2);
+                                if(addressBox1.AccessibilityObject.Value == "" || addressBox1.AccessibilityObject.Value == "about:blank")
+                                {
+                                    int stroka = Int32.Parse(commandsSplit[1]);
+                                    gotoline(stroka, filereaderStream);
+                                }
+                                break;
+                            case "FormCaptchaSlot":
+                                ///показать слот для качи
+                                
+                                break;
                             case "FormForCaptcha":
                                 {
                                     ///показать основную форму для капчи
                                     ///commandsSplit[1] - длина окна
                                     ///commandsSplit[2] - ширина окна
-                                    formGUI.Invoke((Action)(() =>
+                                    ///commandsSplit[3] - положение по x окна
+                                    ///commandsSplit[4] - положение по y окна
+                                    /// commandsSplit[5] - тип окна
+                                    ///     notClosing - закрыть вкладки все до одной содержащей паттерн
+                                    ///     clickone - не ждать юзера
+                                    /// commandsSplit[6] - паттерн
+                                    setLog("ERROR", commandsSplit.Length+"");
+                                    switch (commandsSplit.Length)
                                     {
-
-                                        splitContainerUp.Hide();
-                                        // TextBox textUserBox = new TextBox();
-                                        Button button_ok = new Button();
-                                        /*textUserBox.Dock = DockStyle.Bottom;
-                                        textUserBox.Font = new Font("Times New Roman", 13, FontStyle.Regular);
-                                        textUserBox.Height = 40;
-                                        textUserBox.KeyPress += (s,e) => {
-                                            if (Convert.ToInt32(e.KeyChar) == 13)
-                                            {
-                                                userEnt(textUserBox, button_ok);
-                                            }
-
-                                        };*/
-
-                                        button_ok.Dock = DockStyle.Bottom;
-                                        button_ok.Text = "Отправить";
-                                        button_ok.Font = new Font("Times New Roman", 13, FontStyle.Regular);
-                                        button_ok.Height = 40;
-                                        button_ok.Click += (s, e) =>
-                                        {
-                                            userEnt(button_ok);
-                                        };
-                                        formGUI.Controls.AddRange(new Control[] { button_ok });
-                                        formGUI.Size = new Size(Int32.Parse(commandsSplit[1]), Int32.Parse(commandsSplit[2]));
-                                        formGUI.Location = new Point(10);
-                                        formGUI.Show();
-                                        formGUI.WindowState = FormWindowState.Normal;
-                                        ((Form1)formGUI).isClosing = true;
-                                        timer.Start();
-
-                                        /*if (textUserBox.CanSelect)
-                                        {
-                                            textUserBox.Select();
-                                        }*/
-                                    }));
-                                    waitUser();
+                                        case 3:
+                                            showCaptcha(Int32.Parse(commandsSplit[1]), Int32.Parse(commandsSplit[2]), -1,-1, null, null);
+                                            break;
+                                        case 5:
+                                            showCaptcha(Int32.Parse(commandsSplit[1]), Int32.Parse(commandsSplit[2]), Int32.Parse(commandsSplit[3]), Int32.Parse(commandsSplit[4]), null, null);
+                                            break;
+                                        case 7:
+                                            showCaptcha(Int32.Parse(commandsSplit[1]), Int32.Parse(commandsSplit[2]), Int32.Parse(commandsSplit[3]), Int32.Parse(commandsSplit[4]), commandsSplit[5], commandsSplit[6]);
+                                            break;
+                                    }
+                                    
                                 }
                                 break;
 
@@ -582,7 +593,7 @@ namespace WindowsFormsApp4
                             {
                                 using (StreamWriter filebalanceStream = new StreamWriter(balancefailPath, true))
                                 {
-                                    filebalanceStream.WriteLine(DateTime.Now.ToString() + " [ERROR] " + e.Message, true);
+                                    filebalanceStream.WriteLine(DateTime.Now.ToString() + " [ERROR] " + e.Message + " //// " + e.ToString(), true);
                                     filebalanceStream.Flush();
                                     uyt = false;
                                 }
@@ -593,6 +604,48 @@ namespace WindowsFormsApp4
                     }
                 }
 
+            }
+        }
+
+        private void showCaptcha(int width, int height, int x, int y, string type, string pattern)
+        {
+            formGUI.Invoke((Action)(() =>
+            {
+
+                splitContainerUp.Hide();
+                button_ok = new Button();
+                button_ok.Dock = DockStyle.Bottom;
+                button_ok.Text = "Отправить";
+                button_ok.Font = new Font("Times New Roman", 13, FontStyle.Regular);
+                button_ok.Height = 40;
+                button_ok.Click += (s, e) =>
+                {
+                    userEnt(button_ok);
+                };
+                formGUI.Controls.AddRange(new Control[] { button_ok });
+                formGUI.Size = new Size(width, height);
+                formGUI.Location = new Point(x, y);
+                formGUI.Show();
+                formGUI.WindowState = FormWindowState.Normal;
+                ((Form1)formGUI).isClosing = true;
+                timer.Start();
+
+            }));
+            //тип окна
+            switch (type)
+            {
+                case "notClosing":
+                    formGUI.typeCloseTab = "notClosing";
+                    formGUI.patternForFind = pattern;
+                    waitUser();
+
+                    break;
+                case "clickone":
+                    formGUI.Controls.Remove(button_ok);
+                    break;
+                default:
+                    waitUser();
+                    break;
             }
         }
 
@@ -683,6 +736,7 @@ namespace WindowsFormsApp4
 
             timer.Stop();
              UserAnswer = true;
+            if (formGUI.typeCloseTab != null) formGUI.typeCloseTab = null;
                 formGUI.Hide();
             ((Form1)formGUI).isClosing = false;
             splitContainerUp.Show();

@@ -131,12 +131,6 @@
     <Compile Include="FormLogs.Designer.cs">
       <DependentUpon>FormLogs.cs</DependentUpon>
     </Compile>
-    <Compile Include="FormShowWeb.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FormShowWeb.Designer.cs">
-      <DependentUpon>FormShowWeb.cs</DependentUpon>
-    </Compile>
     <Compile Include="FormXMLView.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -156,9 +150,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormLogs.resx">
       <DependentUpon>FormLogs.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FormShowWeb.resx">
-      <DependentUpon>FormShowWeb.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormXMLView.resx">
       <DependentUpon>FormXMLView.cs</DependentUpon>
