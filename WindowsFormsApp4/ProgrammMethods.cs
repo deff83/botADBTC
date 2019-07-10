@@ -42,6 +42,7 @@ namespace WindowsFormsApp4
         public bool PageLoad = false;
         public bool UserAnswer = false;
         private bool TimerLoad = false;
+        private int countWebGo = 0;
 
         public int startPosition = 0;
         public int nextPosition = 0;
@@ -549,11 +550,21 @@ namespace WindowsFormsApp4
                                 {
                                     int stroka = Int32.Parse(commandsSplit[1]);
                                     gotoline(stroka, filereaderStream);
+                                    countWebGo++;
+                                    if (countWebGo > 5) {
+                                        setLog("ERROR", "более 3 раз попытка зайти на сайт");
+                                        Application.Exit();
+                                    };
                                 }
                                 break;
                             case "FormCaptchaSlot":
                                 ///показать слот для качи
-                                
+                                ///commandsSplit[1] - текст
+                                formGUI.Invoke((Action)(() =>
+                                {
+                                    new FormSlot(commandsSplit[1], this).Show();
+                                }));
+                                waitUser();
                                 break;
                             case "FormForCaptcha":
                                 {
@@ -566,7 +577,6 @@ namespace WindowsFormsApp4
                                     ///     notClosing - закрыть вкладки все до одной содержащей паттерн
                                     ///     clickone - не ждать юзера
                                     /// commandsSplit[6] - паттерн
-                                    setLog("ERROR", commandsSplit.Length+"");
                                     switch (commandsSplit.Length)
                                     {
                                         case 3:
@@ -607,7 +617,7 @@ namespace WindowsFormsApp4
             }
         }
 
-        private void showCaptcha(int width, int height, int x, int y, string type, string pattern)
+        public void showCaptcha(int width, int height, int x, int y, string type, string pattern)
         {
             formGUI.Invoke((Action)(() =>
             {
