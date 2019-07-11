@@ -25,6 +25,7 @@ namespace WindowsFormsApp4
         public string typeCloseTab = null;
         public bool isClosing = false;
         public string patternForFind;
+        public string pathbalanceFile;
 
         public RegistryKey currentUser { get; private set; }
         public RegistryKey myProgramm { get; private set; }
@@ -136,12 +137,17 @@ namespace WindowsFormsApp4
             using (myProgramm = currentUser.CreateSubKey(registrPath))
             {
                 balance = (string)myProgramm.GetValue("pathBalance");
+                pathbalanceFile = (string)myProgramm.GetValue("pathBalanceFile");
             };
             if (balance != null)
             {
                 textBoxBalance.Text = balance;
                 pm.isBalanceUse = true;
                 pm.balancefailPath = balance;
+            }
+            if (pathbalanceFile != null)
+            {
+                textBoxBalanceFile.Text = pathbalanceFile;
             }
             notifyIcon1.ContextMenuStrip = contextMenuStrip2;
             notifyIcon1.Visible = true;
@@ -294,6 +300,7 @@ namespace WindowsFormsApp4
                 {
                     case "notClosing":
                         int i = 0;
+                        bool isCloseTabsAny = false;
                         while(tabControl1.TabCount > 2)
                         {
                             string adres = addressBox1.AccessibilityObject.Value;
@@ -311,8 +318,15 @@ namespace WindowsFormsApp4
                                 {
                                     tabControl1.TabPages[tabControl1.TabCount - 2 - i].Controls[0].Dispose();
                                     tabControl1.TabPages[tabControl1.TabCount - 2 - i].Dispose();
+                                    isCloseTabsAny = true;
+                                    
                                 }
                             }
+                        }
+                        pm.newWebcontroll = tabControl1.TabPages[0].Controls[0] as WebControl;
+                        if (isCloseTabsAny)
+                        {
+                            pm.UserAnswer = true;
                         }
                         break;
                 }
@@ -332,6 +346,19 @@ namespace WindowsFormsApp4
             }
             Show();
             WindowState = FormWindowState.Normal;
+        }
+
+        private void openFileDialogBalanseFile_FileOk(object sender, CancelEventArgs e)
+        {
+            textBoxBalanceFile.Text = ((OpenFileDialog)sender).FileName;
+            using (myProgramm = currentUser.OpenSubKey(registrPath, true))
+                myProgramm.SetValue("pathBalanceFile", textBoxBalanceFile.Text);
+            pathbalanceFile = textBoxBalanceFile.Text;
+        }
+
+        private void buttonBalanceFile_Click(object sender, EventArgs e)
+        {
+            openFileDialogBalanseFile.ShowDialog();
         }
     }
 }

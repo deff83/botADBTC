@@ -103,10 +103,10 @@ namespace WindowsFormsApp4
         private void FormSlot_Load(object sender, EventArgs e)
         {
             this.Location = new Point(((int)((value - 40) % 5)) * this.Width, ((int)((value - 40) / 5)) * this.Height);
-            for(int i=30; i<170; i++)
+            /*for(int i=30; i<170; i++)
                 {
                 pm.setLog(i +"|", (char)i + "");
-                }
+                }*/
         }
 
     }

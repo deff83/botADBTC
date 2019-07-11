@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Awesomium.Core;
 using Awesomium.Windows.Forms;
 using Timer = System.Windows.Forms.Timer;
 
@@ -161,8 +162,12 @@ namespace WindowsFormsApp4
                                     /// commandsSplit[1] - URI страницы для загрузки
                                     formGUI.Invoke((Action)(() =>
                                     {
+                                        webControlnow = webControl;
                                         webControl.Source = new Uri(commandsSplit[1]);
+                                       
                                     }));
+                                    waitPageForLoad();
+                                    waitTimer(90);
                                 }
                                 break;
                             case "waitPage":
@@ -396,6 +401,36 @@ namespace WindowsFormsApp4
 
                                 }
                                 break;
+                            case "WriteBalance":
+                                ///запись в файл баланса
+                                ///commandsSplit[1] - строчка куда писать
+                                ///commandsSplit[2] - количество коинов
+                                ///commandsSplit[3] - единица измерения
+                                bool iswrited = true;
+                                while (iswrited)
+                                {
+                                    try
+                                    {
+                                        List<string> textfilestr = new List<string>();
+                                        using (StreamReader sr = new StreamReader(formGUI.pathbalanceFile))
+                                        {
+                                            string linef = "";
+                                            while((linef = sr.ReadLine()) != null)
+                                            {
+                                                textfilestr.Add(linef);
+                                            }
+                                        }
+                                        textfilestr[Int32.Parse(commandsSplit[1])-1] = DeformateStringForWords(commandsSplit[2]) + " " + commandsSplit[3];
+                                        using (StreamWriter sw = new StreamWriter(formGUI.pathbalanceFile))
+                                        {
+                                            for (int pos = 0; pos < textfilestr.Count; pos++) sw.WriteLine(textfilestr[pos]);
+                                           
+                                        }
+                                        iswrited = false;
+                                    }
+                                    catch (Exception e) { MessageBox.Show(e.Message); }
+                                }
+                                break;
                             case "[SAVE]":
                                 {
                                     ///сохранение в словарь saveString
@@ -493,10 +528,7 @@ namespace WindowsFormsApp4
                                 break;
                             case "[EXIT]":
                                 {
-                                    ///очистить память 
-                                    ///новый webView() во вкладке
-                                    //waitTimer(10);
-
+                                    ///выход с программы с кодом 0
                                     Application.Exit();
                                 }
                                 break;
@@ -545,14 +577,14 @@ namespace WindowsFormsApp4
                             case "[IFwebGo]":
                                 ///если страница не загружена
                                 ///commandsSplit[1] - куда перейти
-                                waitPage(2);
                                 if(addressBox1.AccessibilityObject.Value == "" || addressBox1.AccessibilityObject.Value == "about:blank")
                                 {
                                     int stroka = Int32.Parse(commandsSplit[1]);
                                     gotoline(stroka, filereaderStream);
                                     countWebGo++;
-                                    if (countWebGo > 5) {
-                                        setLog("ERROR", "более 3 раз попытка зайти на сайт");
+                                    if (countWebGo > 1) {
+                                        setLog("ERROR", "более 2 раз попытка зайти на сайт");
+                                        Program.exitCode = 2;   //не смог загрузить сайт
                                         Application.Exit();
                                     };
                                 }
@@ -577,16 +609,17 @@ namespace WindowsFormsApp4
                                     ///     notClosing - закрыть вкладки все до одной содержащей паттерн
                                     ///     clickone - не ждать юзера
                                     /// commandsSplit[6] - паттерн
+                                    /// commandsSplit[7] - куда перейти если закрылись вкладки
                                     switch (commandsSplit.Length)
                                     {
                                         case 3:
-                                            showCaptcha(Int32.Parse(commandsSplit[1]), Int32.Parse(commandsSplit[2]), -1,-1, null, null);
+                                            showCaptcha(Int32.Parse(commandsSplit[1]), Int32.Parse(commandsSplit[2]), -1,-1, null, null, -1, filereaderStream, webControl);
                                             break;
                                         case 5:
-                                            showCaptcha(Int32.Parse(commandsSplit[1]), Int32.Parse(commandsSplit[2]), Int32.Parse(commandsSplit[3]), Int32.Parse(commandsSplit[4]), null, null);
+                                            showCaptcha(Int32.Parse(commandsSplit[1]), Int32.Parse(commandsSplit[2]), Int32.Parse(commandsSplit[3]), Int32.Parse(commandsSplit[4]), null, null, -1, filereaderStream, webControl);
                                             break;
-                                        case 7:
-                                            showCaptcha(Int32.Parse(commandsSplit[1]), Int32.Parse(commandsSplit[2]), Int32.Parse(commandsSplit[3]), Int32.Parse(commandsSplit[4]), commandsSplit[5], commandsSplit[6]);
+                                        case 8:
+                                            showCaptcha(Int32.Parse(commandsSplit[1]), Int32.Parse(commandsSplit[2]), Int32.Parse(commandsSplit[3]), Int32.Parse(commandsSplit[4]), commandsSplit[5], commandsSplit[6], Int32.Parse(commandsSplit[7]), filereaderStream, webControl);
                                             break;
                                     }
                                     
@@ -610,6 +643,7 @@ namespace WindowsFormsApp4
                             }
                             catch (Exception ex) { }
                         }
+                        Program.exitCode = 3;   //ошибка исполнения
                         Application.Exit();
                     }
                 }
@@ -617,7 +651,7 @@ namespace WindowsFormsApp4
             }
         }
 
-        public void showCaptcha(int width, int height, int x, int y, string type, string pattern)
+        public void showCaptcha(int width, int height, int x, int y, string type, string pattern, int strForHide, StreamReader filereaderStream, WebControl webControl)
         {
             formGUI.Invoke((Action)(() =>
             {
@@ -645,10 +679,17 @@ namespace WindowsFormsApp4
             switch (type)
             {
                 case "notClosing":
+                    isAnswerUserCaptcha = true;
                     formGUI.typeCloseTab = "notClosing";
                     formGUI.patternForFind = pattern;
                     waitUser();
-
+                    if (isAnswerUserCaptcha) {
+                        gotoline(strForHide, filereaderStream);
+                        userEnt(button_ok);
+                        isAnswerUserCaptcha = true;
+                        waitPage(10);
+                        webControl = newWebcontroll;
+                    }
                     break;
                 case "clickone":
                     formGUI.Controls.Remove(button_ok);
@@ -745,6 +786,7 @@ namespace WindowsFormsApp4
         {
 
             timer.Stop();
+            isAnswerUserCaptcha = false;
              UserAnswer = true;
             if (formGUI.typeCloseTab != null) formGUI.typeCloseTab = null;
                 formGUI.Hide();
@@ -754,6 +796,40 @@ namespace WindowsFormsApp4
                 formGUI.Size = new Size(1000, 600);
             
             
+        }
+        string result = "";
+        private WebControl webControlnow;
+        private bool isAnswerUserCaptcha = true;
+        public WebControl newWebcontroll;
+
+        private async void waitPageForLoad()
+        {
+            var resultofloading = await WaitForLoadingComplete(CancellationToken.None);
+            TimerLoad = true;
+        }
+
+        public Task<EventArgs> WaitForLoadingComplete(CancellationToken token)
+        {
+            var tcs = new TaskCompletionSource<EventArgs>();
+            FrameEventHandler handler = ((sender, e) =>
+            {
+                if (!(sender as WebControl).IsLoading)
+                {
+                    result = "DONE";
+                    tcs.TrySetResult(e);
+                }
+            }
+            );
+            var registration = token.Register(() => { result = "CANCELLED"; tcs.TrySetCanceled(); });
+            webControlnow.LoadingFrameComplete += handler;
+
+            tcs.Task.ContinueWith(_ =>
+            {
+                webControlnow.LoadingFrameComplete -= handler;
+                registration.Dispose();
+            }, TaskContinuationOptions.ExecuteSynchronously);
+
+            return tcs.Task;
         }
     }
 }

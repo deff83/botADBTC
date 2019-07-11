@@ -60,6 +60,9 @@
             this.textBoxFolderPath = new System.Windows.Forms.TextBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.textBoxBalanceFile = new System.Windows.Forms.TextBox();
+            this.buttonBalanceFile = new System.Windows.Forms.Button();
+            this.openFileDialogBalanseFile = new System.Windows.Forms.OpenFileDialog();
             this.contextMenuStrip1.SuspendLayout();
             this.contextMenuStrip2.SuspendLayout();
             this.panelosn.SuspendLayout();
@@ -153,8 +156,10 @@
             this.panelosn.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.panelosn.Controls.Add(this.panel1);
             this.panelosn.Controls.Add(this.labelInfo);
+            this.panelosn.Controls.Add(this.buttonBalanceFile);
             this.panelosn.Controls.Add(this.button3);
             this.panelosn.Controls.Add(this.button5);
+            this.panelosn.Controls.Add(this.textBoxBalanceFile);
             this.panelosn.Controls.Add(this.button1);
             this.panelosn.Controls.Add(this.textBoxBalance);
             this.panelosn.Controls.Add(this.button2);
@@ -223,7 +228,7 @@
             // labelInfo
             // 
             this.labelInfo.AutoSize = true;
-            this.labelInfo.Location = new System.Drawing.Point(132, 66);
+            this.labelInfo.Location = new System.Drawing.Point(129, 97);
             this.labelInfo.Name = "labelInfo";
             this.labelInfo.Size = new System.Drawing.Size(31, 17);
             this.labelInfo.TabIndex = 17;
@@ -231,11 +236,11 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(752, 69);
+            this.button3.Location = new System.Drawing.Point(851, 69);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(94, 23);
+            this.button3.Size = new System.Drawing.Size(119, 23);
             this.button3.TabIndex = 19;
-            this.button3.Text = "FileBalance";
+            this.button3.Text = "FileConfBalance";
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click_1);
             // 
@@ -261,7 +266,7 @@
             // 
             // textBoxBalance
             // 
-            this.textBoxBalance.Location = new System.Drawing.Point(474, 69);
+            this.textBoxBalance.Location = new System.Drawing.Point(573, 69);
             this.textBoxBalance.Name = "textBoxBalance";
             this.textBoxBalance.Size = new System.Drawing.Size(271, 22);
             this.textBoxBalance.TabIndex = 18;
@@ -333,6 +338,28 @@
             // 
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
+            // textBoxBalanceFile
+            // 
+            this.textBoxBalanceFile.Location = new System.Drawing.Point(183, 68);
+            this.textBoxBalanceFile.Name = "textBoxBalanceFile";
+            this.textBoxBalanceFile.Size = new System.Drawing.Size(271, 22);
+            this.textBoxBalanceFile.TabIndex = 18;
+            // 
+            // buttonBalanceFile
+            // 
+            this.buttonBalanceFile.Location = new System.Drawing.Point(461, 68);
+            this.buttonBalanceFile.Name = "buttonBalanceFile";
+            this.buttonBalanceFile.Size = new System.Drawing.Size(94, 23);
+            this.buttonBalanceFile.TabIndex = 19;
+            this.buttonBalanceFile.Text = "Balance";
+            this.buttonBalanceFile.UseVisualStyleBackColor = true;
+            this.buttonBalanceFile.Click += new System.EventHandler(this.buttonBalanceFile_Click);
+            // 
+            // openFileDialogBalanseFile
+            // 
+            this.openFileDialogBalanseFile.FileName = "openFileDialog3";
+            this.openFileDialogBalanseFile.FileOk += new System.ComponentModel.CancelEventHandler(this.openFileDialogBalanseFile_FileOk);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -387,6 +414,9 @@
         private System.Windows.Forms.TextBox textBoxFolderPath;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.Button buttonBalanceFile;
+        private System.Windows.Forms.TextBox textBoxBalanceFile;
+        private System.Windows.Forms.OpenFileDialog openFileDialogBalanseFile;
     }
 }
 

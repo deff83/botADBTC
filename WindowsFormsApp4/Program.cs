@@ -8,16 +8,17 @@ namespace WindowsFormsApp4
 {
     static class Program
     {
+        public static int exitCode = 0;
         /// <summary>
         /// Главная точка входа для приложения.
         /// </summary>
         [STAThread]
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1(args));
-            
+            return exitCode;
         }
     }
 }
